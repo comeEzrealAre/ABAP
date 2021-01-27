@@ -1,0 +1,320 @@
+*&---------------------------------------------------------------------*
+*&  Include           ZGFS_CLASS01
+*&---------------------------------------------------------------------*
+
+CLASS lcl_model DEFINITION.
+
+  PUBLIC SECTION.
+
+    TYPES: sel_doc TYPE RANGE OF j_1bnflin-docnum.
+
+    DATA: model_tlin TYPE TABLE OF j_1bnflin,
+          model_llin LIKE LINE OF  model_tlin.
+
+    METHODS: get_data IMPORTING value(s_doc) TYPE sel_doc
+    EXPORTING value(model_tlin_send) TYPE STANDARD TABLE.
+
+ENDCLASS.                    "lcl_model DEFINITION
+
+*----------------------------------------------------------------------*
+*       CLASS lcl_model IMPLEMENTATION
+*----------------------------------------------------------------------*
+*
+*----------------------------------------------------------------------*
+CLASS lcl_model IMPLEMENTATION.
+
+  METHOD get_data.
+
+    SELECT * FROM j_1bnflin INTO TABLE model_tlin_send
+    WHERE docnum IN s_doc.
+
+  ENDMETHOD.                    "get_data
+
+ENDCLASS.                    "lcl_model IMPLEMENTATION
+
+*----------------------------------------------------------------------*
+*       CLASS lcl_view DEFINITION
+*----------------------------------------------------------------------*
+*
+*----------------------------------------------------------------------*
+CLASS lcl_view DEFINITION.
+
+  PUBLIC SECTION.
+
+    DATA view_tlin TYPE TABLE OF j_1bnflin.
+    DATA view_slin LIKE LINE OF view_tlin.
+
+    DATA: ls_layout TYPE lvc_s_layo,
+          lt_fcat_alv TYPE lvc_t_fcat.
+
+    DATA: go_grid TYPE REF TO cl_gui_alv_grid,
+          go_dock TYPE REF TO cl_gui_custom_container.
+
+    DATA lt_fcat TYPE slis_t_fieldcat_alv.
+    DATA ls_fcat LIKE LINE OF lt_fcat.
+    DATA ch_fcat TYPE lvc_t_fcat.
+
+    METHODS: fieldcat IMPORTING value(view_tlin_get) TYPE STANDARD TABLE
+    EXPORTING value(lt_send_fieldcat) TYPE slis_t_fieldcat_alv
+      value(lt_send_changcat) TYPE lvc_t_fcat.
+
+    METHODS: alv.
+
+ENDCLASS.                    "lcl_view DEFINITION
+
+*----------------------------------------------------------------------*
+*       CLASS lcl_view IMPLEMENTATION
+*----------------------------------------------------------------------*
+*
+*----------------------------------------------------------------------*
+CLASS lcl_view IMPLEMENTATION.
+
+  METHOD fieldcat.
+
+    view_tlin = view_tlin_get.
+
+    FIELD-SYMBOLS <fs_cat> LIKE LINE OF ch_fcat.
+
+    CALL FUNCTION 'REUSE_ALV_FIELDCATALOG_MERGE'
+      EXPORTING
+        i_program_name         = sy-repid
+        i_structure_name       = 'J_1BNFLIN'
+      CHANGING
+        ct_fieldcat            = lt_fcat
+      EXCEPTIONS
+        inconsistent_interface = 1
+        program_error          = 2
+        OTHERS                 = 3.
+
+    CALL FUNCTION 'LVC_TRANSFER_FROM_SLIS'
+      EXPORTING
+        it_fieldcat_alv = lt_fcat
+      IMPORTING
+        et_fieldcat_lvc = ch_fcat
+      TABLES
+        it_data         = view_tlin
+      EXCEPTIONS
+        it_data_missing = 1
+        OTHERS          = 2.
+
+    READ TABLE ch_fcat ASSIGNING <fs_cat> WITH KEY fieldname = 'MBLNR'.
+    IF <fs_cat> IS ASSIGNED.
+
+      <fs_cat>-hotspot = 'X'.
+
+    ENDIF.
+
+    LOOP AT ch_fcat ASSIGNING <fs_cat>.
+      CASE <fs_cat>-fieldname.
+        WHEN 'DOCNUM'.
+          <fs_cat>-emphasize = 'X'.
+*        <fs_cat>-key = 'X'.
+          <fs_cat>-outputlen = 10.
+        WHEN 'ITMNUM'.
+*        <fs_cat>-key = 'X'.
+          <fs_cat>-emphasize = 'X'.
+        WHEN 'MENGE'.
+          <fs_cat>-edit = 'X'.
+      ENDCASE.
+    ENDLOOP.
+
+  ENDMETHOD.                    "fieldcat
+
+  METHOD alv.
+
+    ls_layout-zebra = 'X'.
+    ls_layout-sel_mode = 'A'.
+    ls_layout-stylefname = 'HANDLE_STYLE'.
+
+    IF NOT go_dock IS BOUND.
+
+      CREATE OBJECT go_dock
+        EXPORTING
+          container_name              = 'ALV'
+        EXCEPTIONS
+          cntl_error                  = 1
+          cntl_system_error           = 2
+          create_error                = 3
+          lifetime_error              = 4
+          lifetime_dynpro_dynpro_link = 5
+          OTHERS                      = 6.
+      IF sy-subrc <> 0.
+        MESSAGE ID sy-msgid TYPE sy-msgty NUMBER sy-msgno
+        WITH sy-msgv1 sy-msgv2 sy-msgv3 sy-msgv4.
+      ENDIF.
+
+    ENDIF.
+
+    IF NOT go_grid IS BOUND.
+
+      CREATE OBJECT go_grid
+        EXPORTING
+          i_parent          = go_dock
+        EXCEPTIONS
+          error_cntl_create = 1
+          error_cntl_init   = 2
+          error_cntl_link   = 3
+          error_dp_create   = 4
+          OTHERS            = 5.
+      IF sy-subrc <> 0.
+        MESSAGE ID sy-msgid TYPE sy-msgty NUMBER sy-msgno
+        WITH sy-msgv1 sy-msgv2 sy-msgv3 sy-msgv4.
+      ENDIF.
+
+      CALL METHOD go_grid->set_table_for_first_display
+        EXPORTING
+*         i_structure_name              = p_str
+          is_layout                     = ls_layout
+        CHANGING
+          it_outtab                     = view_tlin
+          it_fieldcatalog               = ch_fcat
+*         it_sort                       =
+*         it_filter                     =
+        EXCEPTIONS
+          invalid_parameter_combination = 1
+          program_error                 = 2
+          too_many_lines                = 3
+          OTHERS                        = 4.
+      IF sy-subrc <> 0.
+      ENDIF.
+    ELSE.
+
+      CALL METHOD go_grid->refresh_table_display
+        EXCEPTIONS
+          finished = 1
+          OTHERS   = 2.
+
+    ENDIF.
+  ENDMETHOD.                    "alv
+
+ENDCLASS.                    "lcl_view IMPLEMENTATION
+
+*----------------------------------------------------------------------*
+*       CLASS lcl_control DEFINITION
+*----------------------------------------------------------------------*
+*
+*----------------------------------------------------------------------*
+CLASS lcl_control DEFINITION.
+
+  PUBLIC SECTION.
+
+    TYPES: sel_doc TYPE RANGE OF j_1bnflin-docnum.
+
+    DATA con_model TYPE REF TO lcl_model.
+    DATA con_view  TYPE REF TO lcl_view.
+
+    DATA con_tlin  TYPE TABLE OF j_1bnflin.
+    DATA con_slin  LIKE LINE OF con_tlin.
+
+    DATA sav_tlin TYPE TABLE OF j_1bnflin.
+    DATA sav_slin LIKE LINE OF sav_tlin.
+
+    DATA: old_tlin TYPE TABLE OF j_1bnflin.
+
+    DATA lv_conc TYPE string.
+
+    DATA con_fcat TYPE slis_t_fieldcat_alv.
+    DATA con_sfcat LIKE LINE OF con_fcat.
+    DATA con_chcat TYPE lvc_t_fcat.
+
+    METHODS display_alv IMPORTING value(con_doc) TYPE sel_doc.
+
+
+    METHODS handle_double_click                 " DOUBLE_CLICK
+    FOR EVENT double_click OF cl_gui_alv_grid
+    IMPORTING
+      e_row
+      e_column
+      es_row_no.
+
+    METHODS save IMPORTING value(sav_doc) TYPE sel_doc.
+
+ENDCLASS.                    "lcl_control DEFINITION
+
+*----------------------------------------------------------------------*
+*       CLASS lcl_control IMPLEMENTATION
+*----------------------------------------------------------------------*
+*
+*----------------------------------------------------------------------*
+CLASS lcl_control IMPLEMENTATION.
+
+  METHOD handle_double_click.               " DOUBLE_CLICK
+
+  ENDMETHOD.                    "handle_double_click
+
+  METHOD display_alv.
+
+    CREATE OBJECT con_model.
+    CALL METHOD con_model->get_data(
+      EXPORTING
+        s_doc           = con_doc[]
+      IMPORTING
+        model_tlin_send = con_tlin ).
+
+    CREATE OBJECT con_view.
+    CALL METHOD con_view->fieldcat(
+      EXPORTING
+        view_tlin_get    = con_tlin
+      IMPORTING
+        lt_send_changcat = con_chcat
+        lt_send_fieldcat = con_fcat ).
+
+    CALL METHOD con_view->alv( ).
+    SET HANDLER me->handle_double_click FOR
+    con_view->go_grid.
+
+  ENDMETHOD.                    "call
+
+  METHOD save.
+
+    DATA lv_conc TYPE string.
+    DATA lv_conc2 TYPE string.
+    DATA: old TYPE string, new TYPE string.
+    DATA lv_valid.
+    DATA: tabix TYPE sy-tabix.
+
+    CALL METHOD con_view->go_grid->register_edit_event( cl_gui_alv_grid=>mc_evt_modified ).
+    CALL METHOD con_view->go_grid->register_edit_event( cl_gui_alv_grid=>mc_evt_enter ).
+
+    CALL METHOD con_view->go_grid->check_changed_data
+      IMPORTING
+        e_valid = lv_valid.
+    CALL METHOD con_view->go_grid->refresh_table_display( ).
+
+    IF old_tlin IS INITIAL.
+      MOVE con_view->view_tlin TO old_tlin.
+    ENDIF.
+
+    IF lv_valid EQ 'X'.
+      CLEAR: old, new, lv_conc, lv_conc2, tabix, sav_tlin.
+      APPEND LINES OF old_tlin TO sav_tlin.
+      LOOP AT sav_tlin INTO sav_slin.
+        MOVE sy-tabix TO tabix.
+        LOOP AT con_tlin INTO con_slin.
+          IF sy-tabix = tabix.
+            IF sav_slin-menge <> con_slin-menge.
+
+              MOVE con_slin-menge TO old.
+              MOVE sav_slin-menge TO new.
+              CONCATENATE 'Antigo:' old INTO lv_conc SEPARATED BY space.
+              CONCATENATE 'Novo:' new INTO lv_conc2 SEPARATED BY space.
+              CALL FUNCTION 'POPUP_TO_DISPLAY_TEXT'
+                EXPORTING
+                  titel     = 'Modificações'
+                  textline1 = lv_conc
+                  textline2 = lv_conc2.
+
+              EXIT.
+            ENDIF.
+          ENDIF.
+        ENDLOOP.
+      ENDLOOP.
+      CLEAR con_tlin.
+      MOVE sav_tlin TO con_tlin.
+    ENDIF.
+
+    CALL METHOD con_view->go_grid->refresh_table_display( ).
+
+  ENDMETHOD.                    "save
+
+ENDCLASS.                    "lcl_control IMPLEMENTATION

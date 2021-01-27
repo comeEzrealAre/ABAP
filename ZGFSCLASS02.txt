@@ -1,0 +1,120 @@
+*&---------------------------------------------------------------------*
+*& Report  ZGFSCLASS02
+*&
+*&---------------------------------------------------------------------*
+*&
+*&
+*&---------------------------------------------------------------------*
+
+REPORT zgfsclass02.
+
+*----------------------------------------------------------------------*
+*       CLASS lcl_model DEFINITION
+*----------------------------------------------------------------------*
+*
+*----------------------------------------------------------------------*
+CLASS lcl_model DEFINITION.
+
+  PUBLIC SECTION.
+
+    DATA lt_vbak TYPE TABLE OF vbak.
+    DATA ls_vbak LIKE LINE OF lt_vbak.
+
+    METHODS:
+    get_data IMPORTING
+                     value(ir_erdat) TYPE tpmy_r_date.
+
+ENDCLASS.                    "lcl_model DEFINITION
+
+*----------------------------------------------------------------------*
+*       CLASS lcl_model IMPLEMENTATION
+*----------------------------------------------------------------------*
+*
+*----------------------------------------------------------------------*
+CLASS lcl_model IMPLEMENTATION.
+
+  METHOD get_data.
+
+    SELECT * FROM vbak INTO TABLE lt_vbak
+      WHERE erdat IN ir_erdat.
+
+  ENDMETHOD.                    "get_data
+
+ENDCLASS.                    "lcl_model IMPLEMENTATION
+
+*----------------------------------------------------------------------*
+*       CLASS lcl_control DEFINITION
+*----------------------------------------------------------------------*
+*
+*----------------------------------------------------------------------*
+CLASS lcl_control DEFINITION.
+
+  PUBLIC SECTION.
+
+    DATA o_model TYPE REF TO lcl_model.
+
+    METHODS:
+    get_object IMPORTING
+                       value(if_name) TYPE char30.
+
+ENDCLASS.                    "lcl_control DEFINITION
+
+*----------------------------------------------------------------------*
+*       CLASS lcl_control IMPLEMENTATION
+*----------------------------------------------------------------------*
+*
+*----------------------------------------------------------------------*
+CLASS lcl_control IMPLEMENTATION.
+
+  METHOD get_object.
+
+    DATA lo_object TYPE REF TO object.
+
+    CREATE OBJECT lo_object TYPE (if_name).
+    IF sy-subrc = 0.
+
+      o_model ?= lo_object.
+
+    ENDIF.
+
+  ENDMETHOD.                    "get_object
+
+ENDCLASS.                    "lcl_control IMPLEMENTATION
+
+
+START-OF-SELECTION.
+
+  DATA lo_control TYPE REF TO lcl_control.
+
+  CREATE OBJECT lo_control.
+
+  CALL METHOD lo_control->get_object
+    EXPORTING
+      if_name = 'LCL_MODEL'.
+
+  DATA: r_erdat TYPE RANGE OF vbak-erdat,
+        ls_erdat LIKE LINE OF r_erdat.
+
+  ls_erdat-sign   = 'I'.
+  ls_erdat-option = 'BT'.
+  ls_erdat-low    = sy-datum - 10.
+  ls_erdat-high   = sy-datum.
+  APPEND ls_erdat TO r_erdat.
+
+  CALL METHOD lo_control->o_model->get_data
+    EXPORTING
+      ir_erdat = r_erdat.
+
+  DATA lo_alv TYPE REF TO cl_salv_table.
+
+  DATA lx_msg TYPE REF TO cx_salv_msg.
+  TRY.
+      cl_salv_table=>factory(
+        IMPORTING
+          r_salv_table = lo_alv
+        CHANGING
+          t_table      = lo_control->o_model->lt_vbak ) .
+    CATCH cx_salv_msg INTO lx_msg.
+  ENDTRY.
+
+  lo_alv->display( ).

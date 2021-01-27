@@ -1,0 +1,630 @@
+*&---------------------------------------------------------------------*
+*& Report  ZGFSCLASSATL03
+*&
+*&---------------------------------------------------------------------*
+*&
+*&
+*&---------------------------------------------------------------------*
+
+REPORT zgfsclassatl07.
+
+TABLES: j_1bnfdoc, j_1bnflin.
+
+DATA: r_container TYPE REF TO cl_gui_custom_container,
+      r_tree      TYPE REF TO cl_gui_alv_tree.
+DATA  gt_j_view TYPE TABLE OF zgfs_j_lin.
+
+CREATE OBJECT r_container
+  EXPORTING
+    container_name = 'TREE4CONTAINER'.
+
+CREATE OBJECT r_tree
+  EXPORTING
+    parent              = r_container
+    node_selection_mode = cl_gui_list_tree=>node_sel_mode_single
+    item_selection      = 'X'.
+
+*----------------------------------------------------------------------*
+*       CLASS lcl_model DEFINITION
+*----------------------------------------------------------------------*
+*
+*----------------------------------------------------------------------*
+
+CLASS lcl_model DEFINITION.
+
+  PUBLIC SECTION.
+
+    TYPES: sel_doc TYPE RANGE OF j_1bnfdoc-docnum.
+
+    TYPES: item_table_type TYPE STANDARD TABLE OF mtreeitm
+            WITH DEFAULT KEY.
+
+    DATA: node TYPE treev_node,
+      item TYPE mtreeitm.
+
+    DATA lt_j_doc TYPE TABLE OF zgfs_j_all.
+    DATA ls_j_doc TYPE zgfs_j_all.
+
+    DATA lt_j_lin TYPE TABLE OF zgfs_j_lin.
+    DATA ls_j_lin TYPE zgfs_j_lin.
+
+    DATA: lt_doc TYPE TABLE OF j_1bnfdoc,
+          ls_doc LIKE LINE  OF lt_doc.
+
+    DATA: lt_handle TYPE TABLE OF j_1bnfdoc,
+          ls_handle LIKE LINE OF lt_handle.
+
+    DATA: lt_lin TYPE TABLE OF j_1bnflin,
+          ls_lin LIKE LINE  OF lt_lin.
+
+    DATA: ls_layout TYPE lvc_s_layo,
+          lt_fcat_alv   TYPE lvc_t_fcat.
+
+    DATA: go_grid     TYPE REF TO   cl_gui_alv_grid,
+          go_dock     TYPE REF TO   cl_gui_custom_container.
+
+    METHODS: get_data IMPORTING value(s_doc) TYPE sel_doc
+                      EXPORTING value(lt_doclin) TYPE STANDARD TABLE.
+
+    METHODS: get_data_tree IMPORTING value(lv_doc)  TYPE j_1bnfdoc-docnum
+                           EXPORTING value(lt_doclin) TYPE STANDARD TABLE.
+
+    METHODS get_send IMPORTING value(lt_get) TYPE STANDARD TABLE OPTIONAL
+    EXPORTING value(lt_send) TYPE STANDARD TABLE.
+
+ENDCLASS.                    "lcl_model DEFINITION
+
+*----------------------------------------------------------------------*
+*       CLASS lcl_model IMPLEMENTATION
+*----------------------------------------------------------------------*
+*
+*----------------------------------------------------------------------*
+CLASS lcl_model IMPLEMENTATION.
+
+  METHOD get_send.
+  ENDMETHOD.                    "get_send
+
+  METHOD get_data.
+
+    CLEAR node.
+    CLEAR: lt_doc, ls_doc, lt_j_doc, ls_j_doc, lt_lin, ls_lin.
+
+    SELECT * FROM j_1bnfdoc INTO TABLE me->lt_doc
+      WHERE docnum IN s_doc.
+
+    APPEND LINES OF lt_doc TO lt_j_doc.
+
+    lt_doclin = lt_j_doc.
+
+  ENDMETHOD.                    "create_item
+
+  METHOD get_data_tree.
+
+    CLEAR: lt_doclin.
+
+    SELECT * FROM j_1bnflin INTO TABLE me->lt_lin
+      WHERE docnum = lv_doc.
+
+    APPEND LINES OF lt_lin TO lt_j_lin.
+
+    lt_doclin = lt_j_lin.
+
+    CLEAR node.
+    CLEAR: lt_doc, ls_doc, lt_lin, ls_lin.
+
+  ENDMETHOD.                    "create_item
+
+ENDCLASS.                    "lcl_model IMPLEMENTATION
+
+*----------------------------------------------------------------------*
+*       CLASS lcl_view DEFINITION
+*----------------------------------------------------------------------*
+*
+*----------------------------------------------------------------------*
+CLASS lcl_view DEFINITION. "INHERITING FROM lcl_model.
+
+  PUBLIC SECTION.
+
+    TYPES: sel_doc TYPE RANGE OF j_1bnfdoc-docnum.
+    TYPES: sel_itm TYPE RANGE OF j_1bnflin-itmnum.
+
+    TYPES: item_table_type TYPE STANDARD TABLE OF mtreeitm
+          WITH DEFAULT KEY.
+
+    DATA: ls_layout TYPE lvc_s_layo,
+          lt_fcat_alv   TYPE lvc_t_fcat.
+
+    DATA: n_table   TYPE treev_ntab,
+          itm_table TYPE item_table_type.
+
+    DATA: lt_j_view TYPE TABLE OF zgfs_j_lin,
+          ls_j_view TYPE zgfs_j_lin.
+
+    DATA: view_table TYPE TABLE OF zgfs_j_lin,
+          view_str LIKE LINE OF view_table.
+
+    DATA lt_j_doc TYPE TABLE OF zgfs_j_all.
+    DATA ls_j_doc TYPE zgfs_j_all.
+
+    DATA: lv_docnum TYPE zgfs_j_all-docnum.
+
+    DATA: go_grid     TYPE REF TO   cl_gui_alv_grid,
+          go_dock     TYPE REF TO   cl_gui_custom_container.
+
+    DATA: lt_fcat TYPE slis_t_fieldcat_alv,
+          lv_pos  TYPE i,
+          lv_tabix TYPE sy-tabix,
+          ch_fcat TYPE lvc_t_fcat.
+
+    DATA: item_key  TYPE string,
+          node_key  TYPE string.
+
+    DATA lt_fieldcat TYPE lvc_t_fcat.
+    DATA wa_header   TYPE treev_hhdr.
+
+    DATA up_table TYPE treev_upno.
+
+    DATA: v_count TYPE i.
+
+    DATA v_text  TYPE string.
+
+    DATA: node TYPE treev_node,
+          item TYPE mtreeitm.
+
+    METHODS: create_tree IMPORTING value(lt_view) TYPE STANDARD TABLE
+                         EXPORTING value(lt_node) TYPE treev_ntab
+                                   value(lt_item) TYPE item_table_type
+                                   value(lt_send) TYPE STANDARD TABLE.
+
+    METHODS display IMPORTING value(node_display) TYPE STANDARD TABLE
+                              value(item_display) TYPE STANDARD TABLE
+                              value(lt_view3)     TYPE STANDARD TABLE.
+
+    METHODS: fieldcat IMPORTING value(p_tab) TYPE STANDARD TABLE
+                            value(p_str) TYPE string
+                  EXPORTING value(ch_fcat) TYPE lvc_t_fcat.
+
+    METHODS: alv.
+
+ENDCLASS.                    "lcl_view DEFINITION
+
+*----------------------------------------------------------------------*
+*       CLASS lcl_view IMPLEMENTATION
+*----------------------------------------------------------------------*
+*
+*----------------------------------------------------------------------*
+CLASS lcl_view IMPLEMENTATION.
+
+  METHOD create_tree.
+
+    INCLUDE zgfs_loop02.
+*    INCLUDE zgfs_loop.
+
+  ENDMETHOD.                    "create_tree
+
+  METHOD display.
+
+    DATA lt_jdoc TYPE TABLE OF zgfs_j_lin.
+    DATA ls_jdoc LIKE LINE OF lt_jdoc.
+    DATA ls_jdoc_tmp LIKE LINE OF lt_jdoc.
+
+    CALL METHOD r_tree->free.
+    FREE r_tree.
+
+    CREATE OBJECT r_tree
+      EXPORTING
+        parent              = r_container
+        node_selection_mode = cl_gui_column_tree=>node_sel_mode_single
+        item_selection      = 'X'.
+
+    FIELD-SYMBOLS: <fs_fieldcat> LIKE LINE OF lt_fieldcat.
+*get the field catalog
+    CALL FUNCTION 'LVC_FIELDCATALOG_MERGE'
+      EXPORTING
+        i_structure_name = 'ZGFS_J_LIN'
+      CHANGING
+        ct_fieldcat      = lt_fieldcat.
+
+    LOOP AT lt_fieldcat ASSIGNING <fs_fieldcat>.
+      CASE <fs_fieldcat>-fieldname.
+        WHEN 'DOCNUM'.
+          <fs_fieldcat>-no_out = 'X'.
+        WHEN 'ITMNUM'.
+          <fs_fieldcat>-no_out = 'X'.
+      ENDCASE.
+
+      IF <fs_fieldcat>-fieldname <> 'DOCNUM'.
+        IF <fs_fieldcat>-fieldname <> 'ITMNUM'.
+          IF <fs_fieldcat>-fieldname IS NOT INITIAL.
+            <fs_fieldcat>-outputlen = 30.
+          ENDIF.
+        ENDIF.
+      ENDIF.
+
+    ENDLOOP.
+
+    wa_header-heading = 'Número de Documento'(300).
+    wa_header-width = 40.
+    wa_header-width_pix = ''.
+
+    n_table =   node_display.
+    itm_table = item_display.
+
+    CALL METHOD r_tree->set_table_for_first_display
+      EXPORTING
+        is_hierarchy_header = wa_header
+      CHANGING
+        it_fieldcatalog     = lt_fieldcat
+        it_outtab           = view_table.
+
+    CALL METHOD r_tree->frontend_update( ).
+
+    DATA: lv_docnum_key TYPE lvc_nkey,
+    lv_itmnum_key TYPE lvc_nkey,
+    lv_node_text TYPE lvc_value.
+
+    lt_jdoc = lt_view3.
+
+    SORT lt_jdoc BY docnum.
+
+    LOOP AT lt_jdoc INTO ls_jdoc.
+
+      AT NEW docnum.
+        lv_node_text = ls_jdoc-docnum.
+        CALL METHOD r_tree->add_node
+          EXPORTING
+            i_relat_node_key     = ''
+            i_relationship       = cl_gui_column_tree=>relat_last_child
+*           is_outtab_line       = ls_jdoc
+            i_node_text          = lv_node_text
+          IMPORTING
+            e_new_node_key       = lv_docnum_key
+          EXCEPTIONS
+            relat_node_not_found = 1
+            node_not_found       = 2
+            OTHERS               = 3.
+      ENDAT.
+
+      lv_node_text = ls_jdoc-itmnum.
+      CALL METHOD r_tree->add_node
+        EXPORTING
+          i_relat_node_key     = lv_docnum_key
+          i_relationship       = cl_gui_column_tree=>relat_last_child
+          is_outtab_line       = ls_jdoc
+          i_node_text          = lv_node_text
+        IMPORTING
+          e_new_node_key       = lv_itmnum_key
+        EXCEPTIONS
+          relat_node_not_found = 1
+          node_not_found       = 2
+          OTHERS               = 3.
+
+      CALL METHOD r_tree->frontend_update( ).
+
+    ENDLOOP.
+
+  ENDMETHOD.                    "display
+
+  METHOD fieldcat.
+
+    FIELD-SYMBOLS: <fs_cat> LIKE LINE OF ch_fcat.
+
+    lt_j_doc = p_tab.
+
+    CALL FUNCTION 'REUSE_ALV_FIELDCATALOG_MERGE'
+      EXPORTING
+        i_program_name         = sy-repid
+        i_structure_name       = 'ZGFS_J_ALL'
+      CHANGING
+        ct_fieldcat            = lt_fcat
+      EXCEPTIONS
+        inconsistent_interface = 1
+        program_error          = 2
+        OTHERS                 = 3.
+    IF sy-subrc <> 0.
+* Implement suitable error handling here
+    ENDIF.
+
+    CALL FUNCTION 'LVC_TRANSFER_FROM_SLIS'
+      EXPORTING
+        it_fieldcat_alv = lt_fcat
+      IMPORTING
+        et_fieldcat_lvc = ch_fcat
+      TABLES
+        it_data         = lt_j_doc
+      EXCEPTIONS
+        it_data_missing = 1
+        OTHERS          = 2.
+
+    READ TABLE ch_fcat ASSIGNING <fs_cat> WITH KEY fieldname = 'MBLNR'.
+    IF <fs_cat> IS ASSIGNED.
+
+      <fs_cat>-hotspot = 'X'.
+
+    ENDIF.
+
+    LOOP AT ch_fcat ASSIGNING <fs_cat>.
+      CASE <fs_cat>-fieldname.
+        WHEN 'ITMNUM'.
+        WHEN 'DOCNUM'.
+          <fs_cat>-outputlen = 10.
+      ENDCASE.
+    ENDLOOP.
+
+  ENDMETHOD.                    "fieldcat
+
+  METHOD alv.
+
+    ls_layout-zebra = 'X'.
+    ls_layout-sel_mode = 'A'.
+    ls_layout-no_toolbar = 'X'.
+
+    IF NOT go_dock IS BOUND.
+
+      CREATE OBJECT go_dock
+        EXPORTING
+          container_name              = 'ALV'
+        EXCEPTIONS
+          cntl_error                  = 1
+          cntl_system_error           = 2
+          create_error                = 3
+          lifetime_error              = 4
+          lifetime_dynpro_dynpro_link = 5
+          OTHERS                      = 6.
+      IF sy-subrc <> 0.
+        MESSAGE ID sy-msgid TYPE sy-msgty NUMBER sy-msgno
+                   WITH sy-msgv1 sy-msgv2 sy-msgv3 sy-msgv4.
+      ENDIF.
+
+    ENDIF.
+
+    IF NOT go_grid IS BOUND.
+
+      CREATE OBJECT go_grid
+        EXPORTING
+          i_parent          = go_dock
+        EXCEPTIONS
+          error_cntl_create = 1
+          error_cntl_init   = 2
+          error_cntl_link   = 3
+          error_dp_create   = 4
+          OTHERS            = 5.
+      IF sy-subrc <> 0.
+        MESSAGE ID sy-msgid TYPE sy-msgty NUMBER sy-msgno
+                   WITH sy-msgv1 sy-msgv2 sy-msgv3 sy-msgv4.
+      ENDIF.
+
+      CALL METHOD go_grid->set_table_for_first_display
+        EXPORTING
+*         i_structure_name              = p_str
+          is_layout                     = ls_layout
+        CHANGING
+          it_outtab                     = lt_j_doc
+          it_fieldcatalog               = lt_fcat_alv
+*         it_sort                       =
+*         it_filter                     =
+        EXCEPTIONS
+          invalid_parameter_combination = 1
+          program_error                 = 2
+          too_many_lines                = 3
+          OTHERS                        = 4.
+      IF sy-subrc <> 0.
+      ENDIF.
+    ELSE.
+
+      CALL METHOD go_grid->refresh_table_display
+        EXCEPTIONS
+          finished = 1
+          OTHERS   = 2.
+
+    ENDIF.
+  ENDMETHOD.                    "alv
+
+ENDCLASS.                    "lcl_view IMPLEMENTATION
+
+*----------------------------------------------------------------------*
+*       CLASS lcl_control DEFINITION
+*----------------------------------------------------------------------*
+*
+*----------------------------------------------------------------------*
+CLASS lcl_control DEFINITION. "INHERITING FROM lcl_model.
+
+  PUBLIC SECTION.
+
+    TYPES: sel_doc TYPE RANGE OF j_1bnfdoc-docnum.
+    TYPES: sel_itm TYPE RANGE OF j_1bnflin-itmnum.
+
+    TYPES: item_table_type TYPE STANDARD TABLE OF mtreeitm
+          WITH DEFAULT KEY.
+
+    DATA a TYPE j_1bnfdoc-docnum.
+    DATA b TYPE j_1bnflin-itmnum.
+
+    DATA con_model TYPE REF TO lcl_model.
+    DATA con_view  TYPE REF TO lcl_view.
+    DATA lt_control_ref TYPE TABLE OF zgfs_j_all.
+    DATA lt_control_lin TYPE TABLE OF zgfs_j_lin.
+
+    DATA: lt_table TYPE STANDARD TABLE OF j_1bnfdoc,
+          ls_table LIKE LINE OF lt_table.
+
+    DATA: node_control   TYPE treev_ntab,
+          item_control   TYPE item_table_type.
+
+    METHODS: call IMPORTING value(lv_con_doc)  TYPE j_1bnfdoc-docnum.
+
+    METHODS: display_alv IMPORTING value(con_doc) TYPE sel_doc.
+
+    METHODS:
+handle_double_click FOR EVENT double_click OF cl_gui_alv_grid
+IMPORTING e_row.
+
+ENDCLASS.                    "lcl_control DEFINITION
+
+*----------------------------------------------------------------------*
+*       CLASS lcl_control IMPLEMENTATION
+*----------------------------------------------------------------------*
+*
+*----------------------------------------------------------------------*
+CLASS lcl_control IMPLEMENTATION.
+
+  METHOD handle_double_click.
+
+    DATA lt_use LIKE con_model->lt_j_doc.
+    DATA ls_use LIKE LINE OF lt_use.
+
+    CLEAR: a,b, lt_use, ls_use.
+    lt_use = con_model->lt_j_doc.
+
+    IF lt_use IS INITIAL.
+      SELECT SINGLE * FROM j_1bnfdoc INTO ls_use
+        WHERE docnum = e_row-index.
+
+      SELECT SINGLE docnum FROM j_1bnfdoc INTO a
+ WHERE docnum = ls_use-docnum.
+
+      CALL METHOD me->call(
+        EXPORTING
+          lv_con_doc = a ).
+    ELSE.
+
+      READ TABLE lt_use INTO ls_use INDEX e_row-index.
+
+      IF sy-subrc = 0.
+        SELECT SINGLE docnum FROM j_1bnfdoc INTO a
+          WHERE docnum = ls_use-docnum.
+
+        CALL METHOD me->call(
+          EXPORTING
+            lv_con_doc = a ).
+
+      ENDIF.
+    ENDIF.
+
+  ENDMETHOD.                    "handle_double_click
+
+  METHOD call.
+
+    CREATE OBJECT con_model.
+    CALL METHOD con_model->get_data_tree(
+      EXPORTING
+        lv_doc    = a
+      IMPORTING
+        lt_doclin = lt_control_lin ).
+
+    CREATE OBJECT con_view.
+    CALL METHOD con_view->create_tree(
+      EXPORTING
+        lt_view = lt_control_lin
+      IMPORTING
+        lt_node = node_control
+        lt_item = item_control ).
+
+    CALL METHOD con_view->display(
+      EXPORTING
+        node_display = node_control
+        item_display = item_control
+        lt_view3     = lt_control_lin ).
+    CLEAR: a.
+
+  ENDMETHOD.                    "call
+
+  METHOD display_alv.
+
+    CREATE OBJECT con_model.
+    CALL METHOD con_model->get_data(
+      EXPORTING
+        s_doc     = con_doc[]
+      IMPORTING
+        lt_doclin = lt_control_ref ).
+
+    CREATE OBJECT con_view.
+    CALL METHOD con_view->fieldcat(
+      EXPORTING
+        p_tab   = con_model->lt_j_doc
+        p_str   = 'ZGFS_J_ALL'
+      IMPORTING
+        ch_fcat = con_view->lt_fcat_alv ).
+
+    CALL METHOD con_view->alv( ).
+    SET HANDLER me->handle_double_click FOR
+  con_view->go_grid.
+
+  ENDMETHOD.                    "display_alv
+
+ENDCLASS.                    "lcl_control IMPLEMENTATION
+
+INITIALIZATION.
+
+  DATA o_model   TYPE REF TO lcl_model.
+  DATA o_control TYPE REF TO lcl_control.
+  DATA o_view    TYPE REF TO lcl_view.
+
+  CREATE OBJECT o_model.
+  CREATE OBJECT o_control.
+  CREATE OBJECT o_view.
+
+START-OF-SELECTION.
+
+  SELECTION-SCREEN: BEGIN OF BLOCK b1.
+
+  SELECT-OPTIONS: s_docnum FOR j_1bnfdoc-docnum.
+
+  SELECTION-SCREEN: END OF BLOCK b1.
+
+  CALL SCREEN 0200.
+
+*----------------------------------------------------------------------*
+*  MODULE call_display OUTPUT
+*----------------------------------------------------------------------*
+*
+*----------------------------------------------------------------------*
+MODULE call_display OUTPUT.
+
+  CALL METHOD o_control->display_alv(
+    EXPORTING
+      con_doc = s_docnum[] ).
+
+ENDMODULE.                    "call_display OUTPUT
+
+*----------------------------------------------------------------------*
+*  MODULE status_0100 OUTPUT
+*----------------------------------------------------------------------*
+*
+*----------------------------------------------------------------------*
+MODULE status_0100 OUTPUT.
+  SET PF-STATUS '0100'.
+  SET TITLEBAR  '0100'.
+ENDMODULE.                    "status_0100
+
+*----------------------------------------------------------------------*
+*  MODULE user_command_0100
+*----------------------------------------------------------------------*
+*
+*----------------------------------------------------------------------*
+MODULE user_command_0100 INPUT.
+  CASE sy-ucomm.
+    WHEN 'BACK'.
+      LEAVE TO SCREEN 0.
+    WHEN 'EXIT'.
+      LEAVE TO SCREEN 0.
+    WHEN 'CANCEL'.
+      LEAVE TO SCREEN 0.
+  ENDCASE.
+ENDMODULE.                    "user_command_0100
+*&---------------------------------------------------------------------*
+*&      Module  STATUS_0200  OUTPUT
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+MODULE status_0200 OUTPUT.
+  SET PF-STATUS 'PF_0200'.
+*  SET TITLEBAR 'xxx'.
+
+ENDMODULE.                 " STATUS_0200  OUTPUT
+
+*----------------------------------------------------------------------*
+*  MODULE display_tree INPUT
+*----------------------------------------------------------------------*
+*
+*----------------------------------------------------------------------*

@@ -1,0 +1,407 @@
+*&---------------------------------------------------------------------*
+*& Report  ZGFSCLASS01
+*&
+*&---------------------------------------------------------------------*
+*&
+*&
+*&---------------------------------------------------------------------*
+
+REPORT zgfsclass01.
+
+*class lcl_status DEFINITION.
+*
+*  PUBLIC SECTION.
+*
+*  data vida    type i.
+*  data stamina type i.
+*  data mana    type i.
+*
+* endclass.
+
+*class lcl_status definition.
+
+CLASS lcl_knight DEFINITION.
+
+  PUBLIC SECTION.
+
+    DATA  k_vida    TYPE i VALUE 80.
+    DATA  k_stamina TYPE i VALUE 120.
+    DATA  k_mana    TYPE i VALUE 70.
+    DATA  k_lvl     TYPE i.
+    DATA  k_up      TYPE i.
+
+    METHODS:
+
+      set IMPORTING
+                   value(km_lvl) TYPE i,
+      k_levelup,
+      get EXPORTING
+                   value(kx_lvl) TYPE i.
+
+ENDCLASS.                    "lcl_knight DEFINITION
+
+*endclass
+*----------------------------------------------------------------------*
+*       CLASS lcl_knight IMPLEMENTATION
+*----------------------------------------------------------------------*
+*
+*----------------------------------------------------------------------*
+CLASS lcl_knight IMPLEMENTATION.
+
+  METHOD set.
+    k_up = km_lvl.
+  ENDMETHOD.                    "set
+
+  METHOD get.
+    kx_lvl = k_up.
+  ENDMETHOD.                    "get
+
+  METHOD k_levelup.
+
+    IF k_up <= 1.
+      k_lvl = 1.
+      k_vida    = k_vida.
+      k_stamina = k_stamina.
+      k_mana    = k_mana.
+    ENDIF.
+    IF k_up > 1.
+      k_lvl     = k_up.
+      k_vida    = k_vida    + ( k_lvl * 11  ).
+      k_stamina = k_stamina + ( k_lvl * 10 ).
+      k_mana    = k_mana    + ( k_lvl * 7  ).
+    ENDIF.
+
+  ENDMETHOD.                    "k_levelup
+
+ENDCLASS.                    "lcl_knight IMPLEMENTATION
+
+*----------------------------------------------------------------------*
+*       CLASS lcl_guard DEFINITION
+*----------------------------------------------------------------------*
+*
+*----------------------------------------------------------------------*
+CLASS lcl_guard DEFINITION.
+
+  PUBLIC SECTION.
+
+    DATA  g_vida     TYPE i VALUE 110.
+    DATA  g_stamina  TYPE i VALUE 100.
+    DATA  g_mana     TYPE i VALUE 40.
+    DATA  g_lvl      TYPE i.
+    DATA  g_up       TYPE i.
+
+    METHODS:
+
+      set IMPORTING
+                   value(gm_lvl) TYPE i,
+      g_levelup,
+      get EXPORTING
+                   value(gx_lvl) TYPE i.
+
+ENDCLASS.                    "lcl_guard DEFINITION
+
+*----------------------------------------------------------------------*
+*       CLASS lcl_guard IMPLEMENTATION
+*----------------------------------------------------------------------*
+*
+*----------------------------------------------------------------------*
+CLASS lcl_guard IMPLEMENTATION.
+
+  METHOD set.
+    g_up = gm_lvl.
+  ENDMETHOD.                    "set
+
+  METHOD get.
+    gx_lvl = g_up.
+  ENDMETHOD.                    "get
+
+  METHOD g_levelup.
+
+    IF g_up <= 1.
+      g_lvl = 1.
+      g_vida    = g_vida.
+      g_stamina = g_stamina.
+      g_mana    = g_mana.
+    ENDIF.
+    IF g_up > 1.
+      g_lvl      =  g_up.
+      g_vida     =  g_vida    + ( g_lvl * 15 ).
+      g_stamina  =  g_stamina + ( g_lvl * 9  ).
+      g_mana     =  g_mana    + ( g_lvl * 4  ).
+    ENDIF.
+
+  ENDMETHOD.                    "g_levelup
+
+ENDCLASS.                    "lcl_guard IMPLEMENTATION
+
+*----------------------------------------------------------------------*
+*       CLASS lcl_thief DEFINITION
+*----------------------------------------------------------------------*
+*
+*----------------------------------------------------------------------*
+CLASS lcl_thief DEFINITION.
+
+  PUBLIC SECTION.
+
+    DATA t_vida    TYPE i VALUE 70.
+    DATA t_stamina TYPE i VALUE 180.
+    DATA t_mana    TYPE i VALUE 60.
+    DATA t_lvl     TYPE i.
+    DATA t_up      TYPE i.
+
+    METHODS:
+
+      set IMPORTING
+                   value(tm_lvl) TYPE i,
+      t_levelup,
+      get EXPORTING
+                   value(tx_lvl) TYPE i.
+
+ENDCLASS.                    "lcl_thief DEFINITION
+
+*----------------------------------------------------------------------*
+*       CLASS lcl_thief IMPLEMENTATION
+*----------------------------------------------------------------------*
+*
+*----------------------------------------------------------------------*
+CLASS lcl_thief IMPLEMENTATION.
+
+  METHOD set.
+    t_up = tm_lvl.
+  ENDMETHOD.                    "set
+
+  METHOD get.
+    tx_lvl = t_up.
+  ENDMETHOD.                    "get
+
+  METHOD t_levelup.
+
+    IF t_up <= 1.
+      t_lvl = 1.
+      t_vida    = t_vida.
+      t_stamina = t_stamina.
+      t_mana    = t_mana.
+    ENDIF.
+    IF t_up > 1.
+      t_lvl     = t_up.
+      t_vida    = t_vida    + ( t_lvl * 6  ).
+      t_stamina = t_stamina + ( t_lvl * 15 ).
+      t_mana    = t_mana    + ( t_lvl * 5  ).
+    ENDIF.
+
+  ENDMETHOD.
+                   "t_levelup
+ENDCLASS.                    "lcl_thief IMPLEMENTATION
+
+*----------------------------------------------------------------------*
+*       CLASS lcl_mage DEFINITION
+*----------------------------------------------------------------------*
+*
+*----------------------------------------------------------------------*
+CLASS lcl_mage DEFINITION.
+
+  PUBLIC SECTION.
+
+    DATA m_vida    TYPE i VALUE 60.
+    DATA m_stamina TYPE i VALUE 80.
+    DATA m_mana    TYPE i VALUE 200.
+    DATA m_lvl     TYPE i.
+    DATA m_up      TYPE i.
+
+    METHODS:
+
+      set IMPORTING
+                   value(mm_lvl) TYPE i,
+      m_levelup,
+      get EXPORTING
+                   value(mx_lvl) TYPE i.
+
+ENDCLASS.                    "lcl_mage DEFINITION
+
+*----------------------------------------------------------------------*
+*       CLASS lcl_mage IMPLEMENTATION
+*----------------------------------------------------------------------*
+*
+*----------------------------------------------------------------------*
+CLASS lcl_mage IMPLEMENTATION.
+
+  METHOD set.
+    m_up = mm_lvl.
+  ENDMETHOD.                    "set
+
+  METHOD get.
+    mx_lvl = m_up.
+  ENDMETHOD.                    "get
+
+  METHOD m_levelup.
+
+    IF m_up <= 1.
+      m_lvl = 1.
+      m_vida    = m_vida.
+      m_stamina = m_stamina.
+      m_mana    = m_mana.
+    ENDIF.
+    IF m_up > 1.
+      m_lvl     = m_up.
+      m_vida    = m_vida    + ( m_lvl * 4  ).
+      m_stamina = m_stamina + ( m_lvl * 4  ).
+      m_mana    = m_mana    + ( m_lvl * 15 ).
+    ENDIF.
+
+  ENDMETHOD.                    "m_levelup
+
+ENDCLASS.                    "lcl_mage IMPLEMENTATION
+
+*////////////knight
+DATA go_knight  TYPE REF TO lcl_knight.
+DATA lvk_vida    TYPE i.
+DATA lvk_stamina TYPE i.
+DATA lvk_mana    TYPE i.
+DATA lvk_lvl     TYPE i.
+DATA lvkr_lvl    TYPE string.
+
+*////////////guard
+DATA go_guard   TYPE REF TO lcl_guard.
+DATA lvg_vida    TYPE i.
+DATA lvg_stamina TYPE i.
+DATA lvg_mana    TYPE i.
+DATA lvg_lvl     TYPE i.
+DATA lvgr_lvl    TYPE i.
+
+*////////////thief
+DATA go_thief  TYPE REF TO lcl_thief.
+DATA lvt_vida    TYPE i.
+DATA lvt_stamina TYPE i.
+DATA lvt_mana    TYPE i.
+DATA lvt_lvl     TYPE i.
+DATA lvtr_lvl    TYPE i.
+
+*////////////mage
+DATA go_mage   TYPE REF TO lcl_mage.
+DATA lvm_vida    TYPE i.
+DATA lvm_stamina TYPE i.
+DATA lvm_mana    TYPE i.
+DATA lvm_lvl     TYPE i.
+DATA lvmr_lvl    TYPE i.
+
+INITIALIZATION.
+
+*////////////objetos
+  CREATE OBJECT go_knight.
+  lvk_vida    = go_knight->k_vida.
+  lvk_stamina = go_knight->k_stamina.
+  lvk_mana    = go_knight->k_mana.
+  lvk_lvl     = go_knight->k_lvl.
+
+  CREATE OBJECT go_guard.
+  lvg_vida    = go_guard->g_vida.
+  lvg_stamina = go_guard->g_stamina.
+  lvg_mana    = go_guard->g_mana.
+  lvg_lvl     = go_guard->g_lvl.
+
+  CREATE OBJECT go_thief.
+  lvt_vida    = go_thief->t_vida.
+  lvt_stamina = go_thief->t_stamina.
+  lvt_mana    = go_thief->t_mana.
+  lvt_lvl     = go_thief->t_lvl.
+
+  CREATE OBJECT go_mage.
+  lvm_vida    = go_mage->m_vida.
+  lvm_stamina = go_mage->m_stamina.
+  lvm_mana    = go_mage->m_mana.
+  lvm_lvl     = go_mage->m_lvl.
+
+START-OF-SELECTION.
+
+  SELECTION-SCREEN: BEGIN OF BLOCK b1 WITH FRAME TITLE text-001.
+
+  PARAMETER: sk_lvl TYPE i,
+             sg_lvl TYPE i,
+             st_lvl TYPE i,
+             sm_lvl TYPE i.
+
+  SELECTION-SCREEN: END OF BLOCK b1.
+
+*set knight status
+  CALL METHOD go_knight->set
+    EXPORTING
+      km_lvl = sk_lvl.
+
+  CALL METHOD go_knight->get.
+
+  CALL METHOD go_knight->k_levelup.
+
+*set guard status
+  CALL METHOD go_guard->set
+    EXPORTING
+      gm_lvl = sg_lvl.
+
+  CALL METHOD go_guard->get.
+
+  CALL METHOD go_guard->g_levelup.
+
+*set thief status
+
+  CALL METHOD go_thief->set
+    EXPORTING
+      tm_lvl = st_lvl.
+
+  CALL METHOD go_thief->get.
+
+  CALL METHOD go_thief->t_levelup.
+
+*set mage status
+
+  CALL METHOD go_mage->set
+    EXPORTING
+      mm_lvl = sm_lvl.
+
+  CALL METHOD go_mage->get.
+
+  CALL METHOD go_mage->m_levelup.
+
+*atualização de status
+  lvk_vida    = go_knight->k_vida.
+  lvk_stamina = go_knight->k_stamina.
+  lvk_mana    = go_knight->k_mana.
+  lvk_lvl     = go_knight->k_lvl.
+
+  lvg_vida    = go_guard->g_vida.
+  lvg_stamina = go_guard->g_stamina.
+  lvg_mana    = go_guard->g_mana.
+  lvg_lvl     = go_guard->g_lvl.
+
+  lvt_vida    = go_thief->t_vida.
+  lvt_stamina = go_thief->t_stamina.
+  lvt_mana    = go_thief->t_mana.
+  lvt_lvl     = go_thief->t_lvl.
+
+  lvm_vida    = go_mage->m_vida.
+  lvm_stamina = go_mage->m_stamina.
+  lvm_mana    = go_mage->m_mana.
+  lvm_lvl     = go_mage->m_lvl.
+
+  WRITE 'Cavaleiro'.
+  WRITE: 'Level :', lvk_lvl,
+         'Vida : ', lvk_vida,
+         'Stamina : ', lvk_stamina,
+         'Mana : ', lvk_mana.
+  WRITE / '////////////////////////////////////////////////////////////////////////////////////////////////////////////'.
+  WRITE /'Guarda'.
+  WRITE: 'Level    :', lvg_lvl,
+         'Vida : ', lvg_vida,
+         'Stamina : ', lvg_stamina,
+         'Mana : ', lvg_mana.
+  WRITE / '////////////////////////////////////////////////////////////////////////////////////////////////////////////'.
+  WRITE /'Ladrão'.
+  WRITE: 'Level    :', lvt_lvl,
+         'Vida : ', lvt_vida,
+         'Stamina : ', lvt_stamina,
+         'Mana : ', lvt_mana.
+  WRITE / '////////////////////////////////////////////////////////////////////////////////////////////////////////////'.
+  WRITE /'Mago'.
+  WRITE: 'Level      :', lvm_lvl,
+         'Vida : ', lvm_vida,
+         'Stamina : ', lvm_stamina,
+         'Mana : ', lvm_mana.
+  WRITE / '////////////////////////////////////////////////////////////////////////////////////////////////////////////'.

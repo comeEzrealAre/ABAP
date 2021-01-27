@@ -1,0 +1,156 @@
+*&---------------------------------------------------------------------*
+*& Report  ZGFSCLASSATL02
+*&
+*&---------------------------------------------------------------------*
+*&
+*&
+*&---------------------------------------------------------------------*
+
+REPORT zgfsclassatl02.
+
+*----------------------------------------------------------------------*
+*       CLASS lcl_model DEFINITION
+*----------------------------------------------------------------------*
+*
+*----------------------------------------------------------------------*
+CLASS lcl_model DEFINITION.
+
+  PUBLIC SECTION.
+
+
+    DATA: lt_vbak TYPE TABLE OF vbak,
+          ls_vbak LIKE LINE  OF lt_vbak,
+          lt_vbap TYPE TABLE OF vbap,
+          ls_vbap LIKE LINE  OF lt_vbap.
+
+    TYPES: BEGIN OF ty_vbfa,
+           vbelv TYPE vbfa-vbelv,
+           posnv TYPE vbfa-posnv,
+           vbeln TYPE vbfa-vbeln,
+           posnn TYPE vbfa-posnn,
+           vbtyp_n TYPE vbfa-vbtyp_n,
+           vbtyp_v TYPE vbfa-vbtyp_v,
+           END   OF ty_vbfa.
+
+    DATA: lt_vbfa TYPE TABLE OF ty_vbfa,
+          ls_vbfa TYPE ty_vbfa.
+
+ENDCLASS.                    "lcl_model DEFINITION
+
+
+*----------------------------------------------------------------------*
+*       CLASS lcl_control DEFINITION
+*----------------------------------------------------------------------*
+*
+*----------------------------------------------------------------------*
+CLASS lcl_control DEFINITION.
+
+  PUBLIC SECTION.
+
+    DATA control_vbak TYPE TABLE OF vbak.
+
+    METHODS:
+    send IMPORTING value(lt_model) TYPE STANDARD TABLE.
+
+ENDCLASS.                    "lcl_control DEFINITION
+
+*----------------------------------------------------------------------*
+*       CLASS lcl_control IMPLEMENTATION
+*----------------------------------------------------------------------*
+*
+*----------------------------------------------------------------------*
+CLASS lcl_control IMPLEMENTATION.
+
+  METHOD send.
+
+    SELECT * FROM vbak INTO TABLE lt_model.
+    APPEND LINES OF lt_model TO control_vbak.
+
+  ENDMETHOD.                    "send
+
+ENDCLASS.                    "lcl_control IMPLEMENTATION
+
+*----------------------------------------------------------------------*
+*       CLASS lcl_view DEFINITION
+*----------------------------------------------------------------------*
+*
+*----------------------------------------------------------------------*
+CLASS lcl_view DEFINITION.
+
+  PUBLIC SECTION.
+
+    DATA st_fc TYPE slis_fieldcat_alv.
+    DATA i_fc TYPE slis_t_fieldcat_alv.
+    DATA view_aux TYPE TABLE OF vbak.
+
+    METHODS:
+     get_control IMPORTING
+                         value(lt_view) TYPE STANDARD TABLE.
+
+    METHODS:
+     display EXPORTING value(lt_display) TYPE STANDARD TABLE.
+
+ENDCLASS.                    "lcl_view DEFINITION
+
+*----------------------------------------------------------------------*
+*       CLASS lcl_view IMPLEMENTATION
+*----------------------------------------------------------------------*
+*
+*----------------------------------------------------------------------*
+CLASS lcl_view IMPLEMENTATION.
+
+  METHOD get_control.
+
+    SORT lt_view ASCENDING.
+    me->view_aux = lt_view.
+
+  ENDMETHOD.                    "get_control
+
+  METHOD display.
+
+       st_fc-fieldname = 'VBELN'.
+       st_fc-seltext_m = 'ID Vendas'.
+    APPEND st_fc TO i_fc.
+       st_fc-fieldname = 'ERDAT'.
+       st_fc-seltext_m = 'Data de Venda'.
+    APPEND st_fc TO i_fc.
+
+    CLEAR  st_fc.
+
+    CALL FUNCTION 'REUSE_ALV_GRID_DISPLAY'
+      EXPORTING
+        i_callback_program = sy-repid    " Nome do programa
+        it_fieldcat        = i_fc
+      TABLES
+        t_outtab           = view_aux
+      EXCEPTIONS
+        program_error      = 1
+        OTHERS             = 2.
+    IF sy-subrc <> 0.
+      MESSAGE ID sy-msgid TYPE sy-msgty NUMBER sy-msgno
+              WITH sy-msgv1 sy-msgv2 sy-msgv3 sy-msgv4.
+    ENDIF.
+
+  ENDMETHOD.                    "display
+
+ENDCLASS.                    "lcl_view IMPLEMENTATION
+
+START-OF-SELECTION.
+
+  DATA o_model   TYPE REF TO lcl_model.
+  DATA o_control TYPE REF TO lcl_control.
+  DATA o_view    TYPE REF TO lcl_view.
+
+  CREATE OBJECT o_model.
+  CREATE OBJECT o_control.
+  CREATE OBJECT o_view.
+
+  CALL METHOD o_control->send
+    EXPORTING
+      lt_model = o_model->lt_vbak.
+
+  CALL METHOD o_view->get_control
+    EXPORTING
+      lt_view = o_control->control_vbak.
+
+  CALL METHOD o_view->display( ).

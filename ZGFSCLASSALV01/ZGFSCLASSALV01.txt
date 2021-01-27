@@ -1,0 +1,77 @@
+*&---------------------------------------------------------------------*
+*& Report  ZGFSCLASSALV01
+*&
+*&---------------------------------------------------------------------*
+*&
+*&
+*&---------------------------------------------------------------------*
+
+REPORT zgfsclassalv01.
+
+TABLES: j_1bnflin.
+
+INCLUDE zgfs_class01.
+
+INITIALIZATION.
+
+  DATA o_model   TYPE REF TO lcl_model.
+  DATA o_view    TYPE REF TO lcl_view.
+  DATA o_control TYPE REF TO lcl_control.
+
+  CREATE OBJECT o_model.
+  CREATE OBJECT o_view.
+  CREATE OBJECT o_control.
+
+START-OF-SELECTION.
+
+  SELECTION-SCREEN: BEGIN OF BLOCK b1.
+
+  SELECT-OPTIONS: s_docnum FOR j_1bnflin-docnum.
+
+  SELECTION-SCREEN: END OF BLOCK b1.
+
+  CALL SCREEN 100.
+
+*----------------------------------------------------------------------*
+*  MODULE display_alv OUTPUT
+*----------------------------------------------------------------------*
+*
+*----------------------------------------------------------------------*
+MODULE display_alv OUTPUT.
+
+  CALL METHOD o_control->display_alv(
+    EXPORTING
+      con_doc = s_docnum[] ).
+
+ENDMODULE.                    "call_display OUTPUT
+
+*----------------------------------------------------------------------*
+*  MODULE status_0100 OUTPUT
+*----------------------------------------------------------------------*
+*
+*----------------------------------------------------------------------*
+MODULE status_0100 OUTPUT.
+
+  SET PF-STATUS '0100'.
+
+ENDMODULE.                    "status_0100 OUTPUT
+
+*----------------------------------------------------------------------*
+*  MODULE user_command_0100 INPUT
+*----------------------------------------------------------------------*
+*
+*----------------------------------------------------------------------*
+MODULE user_command_0100 INPUT.
+
+  CASE sy-ucomm.
+    WHEN 'BACK'.
+      LEAVE TO SCREEN 0.
+    WHEN 'ESCAPE'.
+      LEAVE TO SCREEN 0.
+    WHEN 'SAVE'.
+      CALL METHOD o_control->save(
+        EXPORTING
+          sav_doc = s_docnum[] ).
+  ENDCASE.
+
+ENDMODULE.                    "user_command_0100 INPUT

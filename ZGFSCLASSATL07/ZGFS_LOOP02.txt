@@ -1,0 +1,1790 @@
+*&---------------------------------------------------------------------*
+*&  Include           ZGFS_LOOP
+*&---------------------------------------------------------------------*
+
+    lt_j_view = lt_view.
+
+    DATA lto_view TYPE REF TO cl_abap_structdescr.
+    DATA lso_view TYPE abap_compdescr.
+    DATA lv_lines TYPE i.
+    DATA lv_value TYPE string.
+
+    lto_view ?= cl_abap_typedescr=>describe_by_data( ls_j_view ).
+    lv_lines  = lines( lto_view->components ). "124
+
+    SORT lt_j_view ASCENDING.
+
+    LOOP AT lt_j_view INTO ls_j_view.
+      CLEAR item_key.
+
+      LOOP AT lto_view->components INTO lso_view.
+
+        CASE lso_view-name.
+          WHEN 'DOCNUM'.
+
+            IF ls_j_view-docnum IS NOT INITIAL.
+              IF ls_j_view-docnum <> lv_docnum.
+                SHIFT ls_j_view-docnum LEFT DELETING LEADING '0'.
+                MOVE ls_j_view-docnum TO lv_docnum.
+                node-node_key = ls_j_view-docnum.
+                node-isfolder = 'X'.
+                node-expander = 'X'.
+                APPEND node TO lt_node.
+                CLEAR node.
+
+                CLEAR item.
+                item-node_key  = ls_j_view-docnum.
+                CONCATENATE 'Número do Documento:' ls_j_view-docnum INTO v_text SEPARATED BY space.
+                item-item_name = ls_j_view-docnum.
+                item-class     = cl_gui_list_tree=>item_class_text.
+                item-alignment = cl_gui_list_tree=>align_auto.
+                item-font      = cl_gui_list_tree=>item_font_prop.
+                item-text = v_text.
+                MOVE ls_j_view-docnum TO lv_docnum.
+                APPEND item TO lt_item.
+                CLEAR item.
+                CLEAR v_text.
+              ENDIF.
+            ENDIF.
+*-----------------------------------------------------------------
+
+          WHEN 'ITMNUM'.
+
+            IF ls_j_view-itmnum IS NOT INITIAL.
+              IF ls_j_view-docnum = lv_docnum.
+                SHIFT ls_j_view-itmnum LEFT DELETING LEADING '0'.
+                CONCATENATE ls_j_view-docnum '-' ls_j_view-itmnum INTO item_key SEPARATED BY space.
+                MOVE ls_j_view-docnum TO lv_docnum.
+*          node-node_key = ls_j_view-itmnum.
+                node-node_key = item_key.
+                node-isfolder = ' '.
+                node-relatkey = ls_j_view-docnum.
+                node-relatship = cl_gui_list_tree=>relat_last_child.
+                APPEND node TO lt_node.
+                CLEAR node.
+
+                CLEAR item.
+                item-node_key = item_key.
+                CONCATENATE ls_j_view-docnum '-' 'Número do Item:' ls_j_view-itmnum INTO v_text SEPARATED BY space.
+                item-item_name = ls_j_view-docnum.
+                item-class = cl_gui_list_tree=>item_class_text.
+                item-length = 100.
+                item-text = v_text.
+                APPEND item TO lt_item.
+                CLEAR item.
+                CLEAR: item_key, v_text.
+              ENDIF.
+            ENDIF.
+*------------------------------------------------------------------
+
+          WHEN 'MATNR'.
+
+            IF ls_j_view-matnr IS NOT INITIAL.
+              IF ls_j_view-docnum = lv_docnum.
+                SHIFT ls_j_view-matnr LEFT DELETING LEADING '0'.
+                CONCATENATE ls_j_view-docnum '-' ls_j_view-matnr INTO item_key SEPARATED BY space.
+                MOVE ls_j_view-docnum TO lv_docnum.
+*          node-node_key = ls_j_view-itmnum.
+                node-node_key = item_key.
+                node-isfolder = ' '.
+                node-relatkey = ls_j_view-docnum.
+                node-relatship = cl_gui_list_tree=>relat_last_child.
+                APPEND node TO lt_node.
+                CLEAR node.
+
+                CLEAR item.
+                item-node_key = item_key.
+                CONCATENATE ls_j_view-docnum '-' 'Número do Material:' ls_j_view-matnr INTO v_text SEPARATED BY space.
+                item-item_name = ls_j_view-docnum.
+                item-class = cl_gui_list_tree=>item_class_text.
+                item-length = 100.
+                item-text = v_text.
+                APPEND item TO lt_item.
+                CLEAR item.
+                CLEAR: item_key, v_text.
+              ENDIF.
+            ENDIF.
+*------------------------------------------------------------------
+
+          WHEN 'BWKEY'.
+
+            IF ls_j_view-bwkey IS NOT INITIAL.
+              IF ls_j_view-docnum = lv_docnum.
+                SHIFT ls_j_view-bwkey LEFT DELETING LEADING '0'.
+                CONCATENATE ls_j_view-docnum '-' ls_j_view-bwkey INTO item_key SEPARATED BY space.
+                MOVE ls_j_view-docnum TO lv_docnum.
+*          node-node_key = ls_j_view-itmnum.
+                node-node_key = item_key.
+                node-isfolder = ' '.
+                node-relatkey = ls_j_view-docnum.
+                node-relatship = cl_gui_list_tree=>relat_last_child.
+                APPEND node TO lt_node.
+                CLEAR node.
+
+                CLEAR item.
+                item-node_key = item_key.
+                CONCATENATE ls_j_view-docnum '-' 'Área de Avaliação:' ls_j_view-bwkey INTO v_text SEPARATED BY space.
+                item-item_name = ls_j_view-docnum.
+                item-class = cl_gui_list_tree=>item_class_text.
+                item-length = 100.
+                item-text = v_text.
+                APPEND item TO lt_item.
+                CLEAR item.
+                CLEAR: item_key, v_text.
+              ENDIF.
+            ENDIF.
+*------------------------------------------------------------------
+
+          WHEN 'BWTAR'.
+
+            IF ls_j_view-bwtar IS NOT INITIAL.
+              IF ls_j_view-docnum = lv_docnum.
+                SHIFT ls_j_view-bwtar LEFT DELETING LEADING '0'.
+                CONCATENATE ls_j_view-docnum '-' ls_j_view-bwtar INTO item_key SEPARATED BY space.
+                MOVE ls_j_view-docnum TO lv_docnum.
+*          node-node_key = ls_j_view-itmnum.
+                node-node_key = item_key.
+                node-isfolder = ' '.
+                node-relatkey = ls_j_view-docnum.
+                node-relatship = cl_gui_list_tree=>relat_last_child.
+                APPEND node TO lt_node.
+                CLEAR node.
+
+                CLEAR item.
+                item-node_key = item_key.
+                CONCATENATE ls_j_view-docnum '-' 'Tipo de Avaliação:' ls_j_view-bwtar INTO v_text SEPARATED BY space.
+                item-item_name = ls_j_view-docnum.
+                item-class = cl_gui_list_tree=>item_class_text.
+                item-length = 100.
+                item-text = v_text.
+                APPEND item TO lt_item.
+                CLEAR item.
+                CLEAR: item_key, v_text.
+              ENDIF.
+            ENDIF.
+*------------------------------------------------------------------
+
+          WHEN 'CHARG'.
+
+            IF ls_j_view-charg IS NOT INITIAL.
+              IF ls_j_view-docnum = lv_docnum.
+                SHIFT ls_j_view-charg LEFT DELETING LEADING '0'.
+                CONCATENATE ls_j_view-docnum '-' ls_j_view-charg INTO item_key SEPARATED BY space.
+                MOVE ls_j_view-docnum TO lv_docnum.
+*          node-node_key = ls_j_view-itmnum.
+                node-node_key = item_key.
+                node-isfolder = ' '.
+                node-relatkey = ls_j_view-docnum.
+                node-relatship = cl_gui_list_tree=>relat_last_child.
+                APPEND node TO lt_node.
+                CLEAR node.
+
+                CLEAR item.
+                item-node_key = item_key.
+                CONCATENATE ls_j_view-docnum '-' 'Número do Lote:' ls_j_view-charg INTO v_text SEPARATED BY space.
+                item-item_name = ls_j_view-docnum.
+                item-class = cl_gui_list_tree=>item_class_text.
+                item-length = 100.
+                item-text = v_text.
+                APPEND item TO lt_item.
+                CLEAR item.
+                CLEAR: item_key, v_text.
+              ENDIF.
+            ENDIF.
+*------------------------------------------------------------------
+
+          WHEN 'MATKL'.
+
+            IF ls_j_view-matkl IS NOT INITIAL.
+              IF ls_j_view-docnum = lv_docnum.
+                SHIFT ls_j_view-matkl LEFT DELETING LEADING '0'.
+                CONCATENATE ls_j_view-docnum '-' ls_j_view-matkl INTO item_key SEPARATED BY space.
+                MOVE ls_j_view-docnum TO lv_docnum.
+*          node-node_key = ls_j_view-itmnum.
+                node-node_key = item_key.
+                node-isfolder = ' '.
+                node-relatkey = ls_j_view-docnum.
+                node-relatship = cl_gui_list_tree=>relat_last_child.
+                APPEND node TO lt_node.
+                CLEAR node.
+
+                CLEAR item.
+                item-node_key = item_key.
+                CONCATENATE ls_j_view-docnum '-' 'Grupo de Mercadorias:' ls_j_view-matkl INTO v_text SEPARATED BY space.
+                item-item_name = ls_j_view-docnum.
+                item-class = cl_gui_list_tree=>item_class_text.
+                item-length = 100.
+                item-text = v_text.
+                APPEND item TO lt_item.
+                CLEAR item.
+                CLEAR: item_key, v_text.
+              ENDIF.
+            ENDIF.
+*------------------------------------------------------------------
+
+          WHEN 'DOCREF'.
+
+            IF ls_j_view-docref IS NOT INITIAL.
+
+              IF ls_j_view-docnum = lv_docnum.
+                SHIFT ls_j_view-docref LEFT DELETING LEADING '0'.
+                CONCATENATE 'RDOC' ls_j_view-docref INTO item_key.
+                CONCATENATE ls_j_view-docnum '-' item_key INTO item_key SEPARATED BY space.
+                MOVE ls_j_view-docnum TO lv_docnum.
+                node-node_key = item_key.
+                node-isfolder = ' '.
+                node-relatkey = ls_j_view-docnum.
+                node-relatship = cl_gui_list_tree=>relat_last_child.
+                APPEND node TO lt_node.
+                CLEAR node.
+
+                CLEAR item.
+                item-node_key = item_key.
+                CONCATENATE ls_j_view-docnum '-' 'Referência a Nota Fiscal:' 'R' ls_j_view-docref INTO v_text SEPARATED BY space.
+                item-item_name = ls_j_view-docnum.
+                item-class = cl_gui_list_tree=>item_class_text.
+                item-length = 100.
+                item-text = v_text.
+                APPEND item TO lt_item.
+                CLEAR item.
+                CLEAR: item_key, v_text.
+              ENDIF.
+            ENDIF.
+*------------------------------------------------------------------
+
+          WHEN 'ITMREF'.
+
+            IF ls_j_view-itmref IS NOT INITIAL.
+
+              IF ls_j_view-docnum = lv_docnum.
+                SHIFT ls_j_view-itmref LEFT DELETING LEADING '0'.
+                CONCATENATE 'RITM' ls_j_view-itmref INTO item_key.
+                CONCATENATE ls_j_view-docnum '-' item_key INTO item_key SEPARATED BY space.
+                MOVE ls_j_view-docnum TO lv_docnum.
+                node-node_key = item_key.
+                node-isfolder = ' '.
+                node-relatkey = ls_j_view-docnum.
+                node-relatship = cl_gui_list_tree=>relat_last_child.
+                APPEND node TO lt_node.
+                CLEAR node.
+
+                CLEAR item.
+                item-node_key = item_key.
+                CONCATENATE ls_j_view-docnum '-' 'Referência ao Nº do Item:: ' 'R' ls_j_view-itmref INTO v_text SEPARATED BY space.
+                item-item_name = ls_j_view-docnum.
+                item-class = cl_gui_list_tree=>item_class_text.
+                item-length = 100.
+                item-text = v_text.
+                APPEND item TO lt_item.
+                CLEAR item.
+                CLEAR: item_key, v_text.
+              ENDIF.
+            ENDIF.
+*------------------------------------------------------------------
+
+          WHEN 'CFOP'.
+
+            IF ls_j_view-cfop IS NOT INITIAL.
+
+              IF ls_j_view-docnum = lv_docnum.
+                SHIFT ls_j_view-cfop LEFT DELETING LEADING '0'.
+                CONCATENATE ls_j_view-docnum '-' ls_j_view-cfop INTO item_key SEPARATED BY space.
+                MOVE ls_j_view-docnum TO lv_docnum.
+                node-node_key = item_key.
+                node-isfolder = ' '.
+                node-relatkey = ls_j_view-docnum.
+                node-relatship = cl_gui_list_tree=>relat_last_child.
+                APPEND node TO lt_node.
+                CLEAR node.
+
+                CLEAR item.
+                item-node_key = item_key.
+                CONCATENATE ls_j_view-docnum '-' 'CFOP: ' ls_j_view-cfop INTO v_text SEPARATED BY space.
+                item-item_name = ls_j_view-docnum.
+                item-class = cl_gui_list_tree=>item_class_text.
+                item-length = 100.
+                item-text = v_text.
+                APPEND item TO lt_item.
+                CLEAR item.
+                CLEAR: item_key, v_text.
+              ENDIF.
+            ENDIF.
+
+          WHEN 'NBM'.
+
+            IF ls_j_view-nbm IS NOT INITIAL.
+
+              IF ls_j_view-docnum = lv_docnum.
+                CONCATENATE ls_j_view-docnum '-' ls_j_view-nbm INTO item_key SEPARATED BY space.
+                MOVE ls_j_view-docnum TO lv_docnum.
+                node-node_key = item_key.
+                node-isfolder = ' '.
+                node-relatkey = ls_j_view-docnum.
+                node-relatship = cl_gui_list_tree=>relat_last_child.
+                APPEND node TO lt_node.
+                CLEAR node.
+
+                CLEAR item.
+                item-node_key = item_key.
+                CONCATENATE ls_j_view-docnum '-' 'Controle para Imposto Seletivo:' ls_j_view-nbm INTO v_text SEPARATED BY space.
+                item-item_name = ls_j_view-docnum.
+                item-class = cl_gui_list_tree=>item_class_text.
+                item-length = 100.
+                item-text = v_text.
+                APPEND item TO lt_item.
+                CLEAR item.
+                CLEAR: item_key, v_text.
+              ENDIF.
+            ENDIF.
+
+          WHEN 'MATORG'.
+
+            IF ls_j_view-matorg IS NOT INITIAL.
+
+              CASE ls_j_view-matorg.
+                WHEN '1'.
+                  CONCATENATE ls_j_view-docnum '-' 'Estr. Importação Direta' INTO item_key SEPARATED BY space.
+                  CONCATENATE ls_j_view-docnum '-' 'Origem do Material:' 'Estr. Importação Direta' INTO v_text SEPARATED BY space.
+                WHEN '2'.
+                  CONCATENATE ls_j_view-docnum '-' 'Estr. Mercado Interno' INTO item_key SEPARATED BY space.
+                  CONCATENATE ls_j_view-docnum '-' 'Origem do Material:' 'Estr. Mercado Interno' INTO v_text SEPARATED BY space.
+                WHEN '0'.
+                  CONCATENATE ls_j_view-docnum '-' 'Nacional - Exceto para códigos 3, 4, 5 ou 8' INTO item_key SEPARATED BY space.
+                  CONCATENATE ls_j_view-docnum '-' 'Origem do Material:' 'Nacional - Exceto para códigos 3, 4, 5 ou 8' INTO v_text SEPARATED BY space.
+                WHEN '3'.
+                  CONCATENATE ls_j_view-docnum '-' 'Nacional - com quota de importação entre 40 e 70%, inclusive' INTO item_key SEPARATED BY space.
+                  CONCATENATE ls_j_view-docnum '-' 'Origem do Material:' 'Nacional - com quota de importação entre 40 e 70%, inclusive' INTO v_text SEPARATED BY space.
+                WHEN '4'.
+                  CONCATENATE ls_j_view-docnum '-' 'Nacional - produção com incentivo fiscal' INTO item_key SEPARATED BY space.
+                  CONCATENATE ls_j_view-docnum '-' 'Origem do Material:' 'Nacional - produção com incentivo fiscal' INTO v_text SEPARATED BY space.
+                WHEN '5'.
+                  CONCATENATE ls_j_view-docnum '-' 'Nacional - com quota de importação abaixo ou igual a 40%' INTO item_key SEPARATED BY space.
+                  CONCATENATE ls_j_view-docnum '-' 'Origem do Material:' 'Nacional - com quota de importação abaixo ou igual a 40%' INTO v_text SEPARATED BY space.
+                WHEN '6'.
+                  CONCATENATE ls_j_view-docnum '-' 'Estr.- imp.dir., nen.prod.nac.semlh., res.CAMEX e gás nat.' INTO item_key SEPARATED BY space.
+                  CONCATENATE ls_j_view-docnum '-' 'Origem do Material:' 'Estr.- imp.dir., nen.prod.nac.semlh., res.CAMEX e gás nat.' INTO v_text SEPARATED BY space.
+                WHEN '7'.
+                  CONCATENATE ls_j_view-docnum '-' 'Estrng.- aquis.int., nenh.prd.nac.sem., res.CAMEX e gás nat.' INTO item_key SEPARATED BY space.
+                  CONCATENATE ls_j_view-docnum '-' 'Origem do Material:' 'Estrng.- aquis.int., nenh.prd.nac.sem., res.CAMEX e gás nat.' INTO v_text SEPARATED BY space.
+                WHEN '8'.
+                  CONCATENATE ls_j_view-docnum '-' 'Nacional - com quota de importação acima de 70%' INTO item_key SEPARATED BY space.
+                  CONCATENATE ls_j_view-docnum '-' 'Origem do Material:' 'Nacional - com quota de importação acima de 70%' INTO v_text SEPARATED BY space.
+
+              ENDCASE.
+
+              IF ls_j_view-docnum = lv_docnum.
+                MOVE ls_j_view-docnum TO lv_docnum.
+                node-node_key = item_key.
+                node-isfolder = ' '.
+                node-relatkey = ls_j_view-docnum.
+                node-relatship = cl_gui_list_tree=>relat_last_child.
+                APPEND node TO lt_node.
+                CLEAR node.
+
+                CLEAR item.
+                item-node_key = item_key.
+                item-item_name = ls_j_view-docnum.
+                item-class = cl_gui_list_tree=>item_class_text.
+                item-length = 100.
+                item-text = v_text.
+                APPEND item TO lt_item.
+                CLEAR item.
+                CLEAR: item_key, v_text.
+              ENDIF.
+            ENDIF.
+
+          WHEN 'TAXSIT'.
+
+            IF ls_j_view-taxsit IS NOT INITIAL.
+
+              IF ls_j_view-docnum = lv_docnum.
+                CASE ls_j_view-taxsit.
+                  WHEN '0'.
+                    CONCATENATE ls_j_view-docnum '-' 'Sujeito a ICMS' INTO item_key SEPARATED BY space.
+                    CONCATENATE ls_j_view-docnum '-' 'Situação Tributária ICMS:' 'Sujeito a ICMS' INTO v_text SEPARATED BY space.
+                  WHEN '1'.
+                    CONCATENATE ls_j_view-docnum '-' 'Sujeito a ICMS + Substituição Tributária' INTO item_key SEPARATED BY space.
+                    CONCATENATE ls_j_view-docnum '-' 'Situação Tributária ICMS:' 'Sujeito a ICMS + Substituição Tributária' INTO v_text SEPARATED BY space.
+                  WHEN '2'.
+                    CONCATENATE ls_j_view-docnum '-' 'Sujeito a ICMS (base do imposto reduzida)' INTO item_key SEPARATED BY space.
+                    CONCATENATE ls_j_view-docnum '-' 'Situação Tributária ICMS:' 'Sujeito a ICMS (base do imposto reduzida)' INTO v_text SEPARATED BY space.
+                  WHEN '3'.
+                    CONCATENATE ls_j_view-docnum '-' 'Isento ou não sujeito a imposto + Substituição Tributária' INTO item_key SEPARATED BY space.
+                    CONCATENATE ls_j_view-docnum '-' 'Situação Tributária ICMS:' 'Isento ou não sujeito a imposto + Substituição Tributária' INTO v_text SEPARATED BY space.
+                  WHEN '4'.
+                    CONCATENATE ls_j_view-docnum '-' 'Isento' INTO item_key SEPARATED BY space.
+                    CONCATENATE ls_j_view-docnum '-' 'Situação Tributária ICMS:' 'Isento' INTO v_text SEPARATED BY space.
+                  WHEN '5'.
+                    CONCATENATE ls_j_view-docnum '-' 'Suspenso' INTO item_key SEPARATED BY space.
+                    CONCATENATE ls_j_view-docnum '-' 'Situação Tributária ICMS:' 'Suspenso' INTO v_text SEPARATED BY space.
+                  WHEN '6'.
+                    CONCATENATE ls_j_view-docnum '-' 'ICMS já cobrado por meio de Substituição Tributária' INTO item_key SEPARATED BY space.
+                    CONCATENATE ls_j_view-docnum '-' 'Situação Tributária ICMS:' 'ICMS já cobrado por meio de Substituição Tributária' INTO v_text SEPARATED BY space.
+                  WHEN '7'.
+                    CONCATENATE ls_j_view-docnum '-' 'Sujeito a ICMS (base imposto reduzida) + Sub.Trib.' INTO item_key SEPARATED BY space.
+                    CONCATENATE ls_j_view-docnum '-' 'Situação Tributária ICMS:' 'Sujeito a ICMS (base imposto reduzida) + Sub.Trib.' INTO v_text SEPARATED BY space.
+                  WHEN '9'.
+                    CONCATENATE ls_j_view-docnum '-' 'Outros/as' INTO item_key SEPARATED BY space.
+                    CONCATENATE ls_j_view-docnum '-' 'Situação Tributária ICMS:' 'Outros/as' INTO v_text SEPARATED BY space.
+                  WHEN 'A'.
+                    CONCATENATE ls_j_view-docnum '-' 'Não sujeito a imposto' INTO item_key SEPARATED BY space.
+                    CONCATENATE ls_j_view-docnum '-' 'Situação Tributária ICMS:' 'Não sujeito a imposto' INTO v_text SEPARATED BY space.
+                  WHEN 'B'.
+                    CONCATENATE ls_j_view-docnum '-' 'Diferido' INTO item_key SEPARATED BY space.
+                    CONCATENATE ls_j_view-docnum '-' 'Situação Tributária ICMS:' 'Diferido' INTO v_text SEPARATED BY space.
+
+                ENDCASE.
+                MOVE ls_j_view-docnum TO lv_docnum.
+*          node-node_key = ls_j_view-itmnum.
+                node-node_key = item_key.
+                node-isfolder = ' '.
+                node-relatkey = ls_j_view-docnum.
+                node-relatship = cl_gui_list_tree=>relat_last_child.
+                APPEND node TO lt_node.
+                CLEAR node.
+
+                CLEAR item.
+                item-node_key = item_key.
+                item-item_name = ls_j_view-docnum.
+                item-class = cl_gui_list_tree=>item_class_text.
+                item-length = 100.
+                item-text = v_text.
+                APPEND item TO lt_item.
+                CLEAR item.
+                CLEAR: item_key, v_text.
+              ENDIF.
+            ENDIF.
+
+          WHEN 'TAXSI2'.
+
+            IF ls_j_view-taxsi2 IS NOT INITIAL.
+
+              IF ls_j_view-docnum = lv_docnum.
+                SHIFT ls_j_view-taxsi2 LEFT DELETING LEADING '0'.
+                CONCATENATE ls_j_view-docnum '-' 'IPI' ls_j_view-taxsi2 INTO item_key SEPARATED BY space.
+                MOVE ls_j_view-docnum TO lv_docnum.
+                node-node_key = item_key.
+                node-isfolder = ' '.
+                node-relatkey = ls_j_view-docnum.
+                node-relatship = cl_gui_list_tree=>relat_last_child.
+                APPEND node TO lt_node.
+                CLEAR node.
+
+                CLEAR item.
+                item-node_key = item_key.
+                CONCATENATE ls_j_view-docnum '-' 'Situação Fiscal IPI:' ls_j_view-taxsi2 INTO v_text SEPARATED BY space.
+                item-item_name = ls_j_view-docnum.
+                item-class = cl_gui_list_tree=>item_class_text.
+                item-length = 100.
+                item-text = v_text.
+                APPEND item TO lt_item.
+                CLEAR item.
+                CLEAR: item_key, v_text.
+              ENDIF.
+            ENDIF.
+
+          WHEN 'OWNPRO'.
+            CASE ls_j_view-ownpro.
+              WHEN 'X'.
+                CONCATENATE ls_j_view-docnum '-' 'Sim' INTO item_key SEPARATED BY space.
+                CONCATENATE ls_j_view-docnum '-' 'Produção Interna:' 'Sim' INTO v_text SEPARATED BY space.
+              WHEN ' '.
+                CONCATENATE ls_j_view-docnum '-' 'Não' INTO item_key SEPARATED BY space.
+                CONCATENATE ls_j_view-docnum '-' 'Produção Interna:' 'Não' INTO v_text SEPARATED BY space.
+            ENDCASE.
+
+            IF ls_j_view-docnum = lv_docnum.
+              MOVE ls_j_view-docnum TO lv_docnum.
+              node-node_key = item_key.
+              node-isfolder = ' '.
+              node-relatkey = ls_j_view-docnum.
+              node-relatship = cl_gui_list_tree=>relat_last_child.
+              APPEND node TO lt_node.
+              CLEAR node.
+
+              CLEAR item.
+              item-node_key = item_key.
+              item-item_name = ls_j_view-docnum.
+              item-class = cl_gui_list_tree=>item_class_text.
+              item-length = 100.
+              item-text = v_text.
+              APPEND item TO lt_item.
+              CLEAR item.
+              CLEAR: item_key, v_text.
+            ENDIF.
+
+          WHEN 'MATUSE'.
+
+            IF ls_j_view-matuse IS NOT INITIAL.
+              CASE ls_j_view-matuse.
+                WHEN '0'.
+                  CONCATENATE ls_j_view-docnum '-' 'Revenda' INTO item_key SEPARATED BY space.
+                  CONCATENATE ls_j_view-docnum '-' 'Utilização do Material:' 'Revenda' INTO v_text SEPARATED BY space.
+                WHEN '1'.
+                  CONCATENATE ls_j_view-docnum '-' 'Continuação do processamento' INTO item_key SEPARATED BY space.
+                  CONCATENATE ls_j_view-docnum '-' 'Utilização do Material:' 'Continuação do processamento' INTO v_text SEPARATED BY space.
+                WHEN '2'.
+                  CONCATENATE ls_j_view-docnum '-' 'Consumo' INTO item_key SEPARATED BY space.
+                  CONCATENATE ls_j_view-docnum '-' 'Utilização do Material:' 'Consumo' INTO v_text SEPARATED BY space.
+                WHEN '3'.
+                  CONCATENATE ls_j_view-docnum '-' 'Imobilizado' INTO item_key SEPARATED BY space.
+                  CONCATENATE ls_j_view-docnum '-' 'Utilização do Material:' 'Imobilizado' INTO v_text SEPARATED BY space.
+              ENDCASE.
+
+              IF ls_j_view-docnum = lv_docnum.
+                SHIFT ls_j_view-matuse LEFT DELETING LEADING '0'.
+                MOVE ls_j_view-docnum TO lv_docnum.
+                node-node_key = item_key.
+                node-isfolder = ' '.
+                node-relatkey = ls_j_view-docnum.
+                node-relatship = cl_gui_list_tree=>relat_last_child.
+                APPEND node TO lt_node.
+                CLEAR node.
+
+                CLEAR item.
+                item-node_key = item_key.
+                item-item_name = ls_j_view-docnum.
+                item-class = cl_gui_list_tree=>item_class_text.
+                item-length = 100.
+                item-text = v_text.
+                APPEND item TO lt_item.
+                CLEAR item.
+                CLEAR: item_key, v_text.
+              ENDIF.
+            ENDIF.
+
+          WHEN 'REFTYP'.
+
+            IF ls_j_view-reftyp IS NOT INITIAL.
+
+              IF ls_j_view-docnum = lv_docnum.
+                SHIFT ls_j_view-reftyp LEFT DELETING LEADING '0'.
+                CONCATENATE ls_j_view-docnum '-' ls_j_view-reftyp INTO item_key SEPARATED BY space.
+                MOVE ls_j_view-docnum TO lv_docnum.
+                node-node_key = item_key.
+                node-isfolder = ' '.
+                node-relatkey = ls_j_view-docnum.
+                node-relatship = cl_gui_list_tree=>relat_last_child.
+                APPEND node TO lt_node.
+                CLEAR node.
+
+                CLEAR item.
+                item-node_key = item_key.
+                CONCATENATE ls_j_view-docnum '-' 'Tipo referência:' ls_j_view-reftyp INTO v_text SEPARATED BY space.
+                item-item_name = ls_j_view-docnum.
+                item-class = cl_gui_list_tree=>item_class_text.
+                item-length = 100.
+                item-text = v_text.
+                APPEND item TO lt_item.
+                CLEAR item.
+                CLEAR: item_key, v_text.
+              ENDIF.
+            ENDIF.
+
+          WHEN 'REFKEY'.
+
+            IF ls_j_view-refkey IS NOT INITIAL.
+
+              IF ls_j_view-docnum = lv_docnum.
+                SHIFT ls_j_view-refkey LEFT DELETING LEADING '0'.
+                CONCATENATE ls_j_view-docnum '-' ls_j_view-refkey INTO item_key SEPARATED BY space.
+                MOVE ls_j_view-docnum TO lv_docnum.
+                node-node_key = item_key.
+                node-isfolder = ' '.
+                node-relatkey = ls_j_view-docnum.
+                node-relatship = cl_gui_list_tree=>relat_last_child.
+                APPEND node TO lt_node.
+                CLEAR node.
+
+                CLEAR item.
+                item-node_key = item_key.
+                CONCATENATE ls_j_view-docnum '-' 'Referência ao documento de Origem:' ls_j_view-refkey INTO v_text SEPARATED BY space.
+                item-item_name = ls_j_view-docnum.
+                item-class = cl_gui_list_tree=>item_class_text.
+                item-length = 100.
+                item-text = v_text.
+                APPEND item TO lt_item.
+                CLEAR item.
+                CLEAR: item_key, v_text.
+              ENDIF.
+            ENDIF.
+
+          WHEN 'REFITM'.
+
+            IF ls_j_view-refitm IS NOT INITIAL.
+
+              IF ls_j_view-docnum = lv_docnum.
+                SHIFT ls_j_view-refitm LEFT DELETING LEADING '0'.
+                CONCATENATE ls_j_view-docnum '-' ls_j_view-refitm 'R' INTO item_key SEPARATED BY space.
+                MOVE ls_j_view-docnum TO lv_docnum.
+                node-node_key = item_key.
+                node-isfolder = ' '.
+                node-relatkey = ls_j_view-docnum.
+                node-relatship = cl_gui_list_tree=>relat_last_child.
+                APPEND node TO lt_node.
+                CLEAR node.
+
+                CLEAR item.
+                item-node_key = item_key.
+                CONCATENATE ls_j_view-docnum '-' 'Tipo referência:' ls_j_view-refitm 'R' INTO v_text SEPARATED BY space.
+                item-item_name = ls_j_view-docnum.
+                item-class = cl_gui_list_tree=>item_class_text.
+                item-length = 100.
+                item-text = v_text.
+                APPEND item TO lt_item.
+                CLEAR item.
+                CLEAR: item_key, v_text.
+              ENDIF.
+            ENDIF.
+
+          WHEN 'MENGE'.
+
+            IF ls_j_view-menge IS NOT INITIAL.
+
+              IF ls_j_view-docnum = lv_docnum.
+                MOVE ls_j_view-menge TO item_key.
+                CONCATENATE ls_j_view-docnum '-' item_key INTO item_key SEPARATED BY space.
+                MOVE ls_j_view-docnum TO lv_docnum.
+                node-node_key = item_key.
+                node-isfolder = ' '.
+                node-relatkey = ls_j_view-docnum.
+                node-relatship = cl_gui_list_tree=>relat_last_child.
+                APPEND node TO lt_node.
+                CLEAR node.
+
+                CLEAR item.
+                item-node_key = item_key.
+                MOVE ls_j_view-menge TO v_text.
+                CONCATENATE ls_j_view-docnum '-' 'Quantidade:' v_text INTO v_text SEPARATED BY space.
+                item-item_name = ls_j_view-docnum.
+                item-class = cl_gui_list_tree=>item_class_text.
+                item-length = 100.
+                item-text = v_text.
+                APPEND item TO lt_item.
+                CLEAR item.
+                CLEAR: item_key, v_text.
+              ENDIF.
+            ENDIF.
+
+          WHEN 'MEINS'.
+
+            IF ls_j_view-meins IS NOT INITIAL.
+
+              IF ls_j_view-docnum = lv_docnum.
+                CONCATENATE ls_j_view-docnum '-' ls_j_view-meins INTO item_key SEPARATED BY space.
+                MOVE ls_j_view-docnum TO lv_docnum.
+                node-node_key = item_key.
+                node-isfolder = ' '.
+                node-relatkey = ls_j_view-docnum.
+                node-relatship = cl_gui_list_tree=>relat_last_child.
+                APPEND node TO lt_node.
+                CLEAR node.
+
+                CLEAR item.
+                item-node_key = item_key.
+                CONCATENATE ls_j_view-docnum '-' 'Unidade de medidca básica:' ls_j_view-meins INTO v_text SEPARATED BY space.
+                item-item_name = ls_j_view-docnum.
+                item-class = cl_gui_list_tree=>item_class_text.
+                item-length = 100.
+                item-text = v_text.
+                APPEND item TO lt_item.
+                CLEAR item.
+                CLEAR: item_key, v_text.
+              ENDIF.
+            ENDIF.
+
+          WHEN 'NETPR'.
+
+            IF ls_j_view-netpr IS NOT INITIAL.
+
+              IF ls_j_view-docnum = lv_docnum.
+                MOVE ls_j_view-netpr TO item_key.
+                CONCATENATE 'P' item_key INTO item_key.
+                MOVE ls_j_view-docnum TO lv_docnum.
+                node-node_key = item_key.
+                node-isfolder = ' '.
+                node-relatkey = ls_j_view-docnum.
+                node-relatship = cl_gui_list_tree=>relat_last_child.
+                APPEND node TO lt_node.
+                CLEAR node.
+
+                CLEAR item.
+                MOVE ls_j_view-netpr TO v_text.
+                item-node_key = item_key.
+                CONCATENATE ls_j_view-docnum '-' 'Preço Líquido:' v_text INTO v_text SEPARATED BY space.
+                item-item_name = ls_j_view-docnum.
+                item-class = cl_gui_list_tree=>item_class_text.
+                item-length = 100.
+                item-text = v_text.
+                APPEND item TO lt_item.
+                CLEAR item.
+                CLEAR: item_key, v_text.
+              ENDIF.
+            ENDIF.
+
+          WHEN 'NETWR'.
+
+            IF ls_j_view-netwr IS NOT INITIAL.
+
+              IF ls_j_view-docnum = lv_docnum.
+                MOVE ls_j_view-netwr TO item_key.
+                CONCATENATE 'V' item_key INTO item_key.
+                MOVE ls_j_view-docnum TO lv_docnum.
+                node-node_key = item_key.
+                node-isfolder = ' '.
+                node-relatkey = ls_j_view-docnum.
+                node-relatship = cl_gui_list_tree=>relat_last_child.
+                APPEND node TO lt_node.
+                CLEAR node.
+
+                CLEAR item.
+                MOVE ls_j_view-netwr TO v_text.
+                item-node_key = item_key.
+                CONCATENATE ls_j_view-docnum '-' 'Valor Líquido:' v_text INTO v_text SEPARATED BY space.
+                item-item_name = ls_j_view-docnum.
+                item-class = cl_gui_list_tree=>item_class_text.
+                item-length = 100.
+                item-text = v_text.
+                APPEND item TO lt_item.
+                CLEAR item.
+                CLEAR: item_key, v_text.
+              ENDIF.
+            ENDIF.
+
+          WHEN 'TAXLW1'.
+
+            IF ls_j_view-taxlw1 IS NOT INITIAL.
+
+              IF ls_j_view-docnum = lv_docnum.
+                CONCATENATE ls_j_view-docnum '-' ls_j_view-taxlw1 INTO item_key SEPARATED BY space.
+                MOVE ls_j_view-docnum TO lv_docnum.
+                node-node_key = item_key.
+                node-isfolder = ' '.
+                node-relatkey = ls_j_view-docnum.
+                node-relatship = cl_gui_list_tree=>relat_last_child.
+                APPEND node TO lt_node.
+                CLEAR node.
+
+                CLEAR item.
+                item-node_key = item_key.
+                CONCATENATE ls_j_view-docnum '-' 'Direito Fiscal ICMS:' ls_j_view-taxlw1 INTO v_text SEPARATED BY space.
+                item-item_name = ls_j_view-docnum.
+                item-class = cl_gui_list_tree=>item_class_text.
+                item-length = 100.
+                item-text = v_text.
+                APPEND item TO lt_item.
+                CLEAR item.
+                CLEAR: item_key, v_text.
+              ENDIF.
+            ENDIF.
+
+          WHEN 'TAXLW2'.
+
+            IF ls_j_view-taxlw2 IS NOT INITIAL.
+
+              IF ls_j_view-docnum = lv_docnum.
+                SHIFT ls_j_view-taxlw2 LEFT DELETING LEADING '0'.
+                CONCATENATE ls_j_view-docnum '-' ls_j_view-taxlw2 INTO item_key SEPARATED BY space.
+                MOVE ls_j_view-docnum TO lv_docnum.
+                node-node_key = item_key.
+                node-isfolder = ' '.
+                node-relatkey = ls_j_view-docnum.
+                node-relatship = cl_gui_list_tree=>relat_last_child.
+                APPEND node TO lt_node.
+                CLEAR node.
+
+                CLEAR item.
+                item-node_key = item_key.
+                CONCATENATE ls_j_view-docnum '-' 'Direito Fiscal IPI:' ls_j_view-taxlw2 INTO v_text SEPARATED BY space.
+                item-item_name = ls_j_view-docnum.
+                item-class = cl_gui_list_tree=>item_class_text.
+                item-length = 100.
+                item-text = v_text.
+                APPEND item TO lt_item.
+                CLEAR item.
+                CLEAR: item_key, v_text.
+              ENDIF.
+            ENDIF.
+
+          WHEN 'TMISS'.
+            IF ls_j_view-tmiss IS NOT INITIAL.
+
+              IF ls_j_view-docnum = lv_docnum.
+                SHIFT ls_j_view-tmiss LEFT DELETING LEADING '0'.
+                CONCATENATE ls_j_view-docnum '-' ls_j_view-tmiss INTO item_key SEPARATED BY space.
+                MOVE ls_j_view-docnum TO lv_docnum.
+                node-node_key = item_key.
+                node-isfolder = ' '.
+                node-relatkey = ls_j_view-docnum.
+                node-relatship = cl_gui_list_tree=>relat_last_child.
+                APPEND node TO lt_node.
+                CLEAR node.
+
+                CLEAR item.
+                item-node_key = item_key.
+                CONCATENATE ls_j_view-docnum '-' 'Imposto ISS:' ls_j_view-tmiss INTO v_text SEPARATED BY space.
+                item-item_name = ls_j_view-docnum.
+                item-class = cl_gui_list_tree=>item_class_text.
+                item-length = 100.
+                item-text = v_text.
+                APPEND item TO lt_item.
+                CLEAR item.
+                CLEAR: item_key, v_text.
+              ENDIF.
+            ENDIF.
+
+          WHEN 'NETFRE'.
+            IF ls_j_view-netfre IS NOT INITIAL.
+
+              IF ls_j_view-docnum = lv_docnum.
+                MOVE ls_j_view-netfre TO item_key.
+                CONCATENATE ls_j_view-docnum '-' item_key INTO item_key SEPARATED BY space.
+                MOVE ls_j_view-docnum TO lv_docnum.
+                node-node_key = item_key.
+                node-isfolder = ' '.
+                node-relatkey = ls_j_view-docnum.
+                node-relatship = cl_gui_list_tree=>relat_last_child.
+                APPEND node TO lt_node.
+                CLEAR node.
+
+                CLEAR item.
+                item-node_key = item_key.
+                MOVE ls_j_view-netfre TO v_text.
+                CONCATENATE ls_j_view-docnum '-' 'Montante líquido de frete na moeda do documento:' v_text INTO v_text SEPARATED BY space.
+                item-item_name = ls_j_view-docnum.
+                item-class = cl_gui_list_tree=>item_class_text.
+                item-length = 100.
+                item-text = v_text.
+                APPEND item TO lt_item.
+                CLEAR item.
+                CLEAR: item_key, v_text.
+              ENDIF.
+            ENDIF.
+
+          WHEN 'NETINS'.
+
+            IF ls_j_view-netins IS NOT INITIAL.
+
+              IF ls_j_view-docnum = lv_docnum.
+                MOVE ls_j_view-netins TO item_key.
+                CONCATENATE ls_j_view-docnum '-' item_key INTO item_key SEPARATED BY space.
+                MOVE ls_j_view-docnum TO lv_docnum.
+                node-node_key = item_key.
+                node-isfolder = ' '.
+                node-relatkey = ls_j_view-docnum.
+                node-relatship = cl_gui_list_tree=>relat_last_child.
+                APPEND node TO lt_node.
+                CLEAR node.
+
+                CLEAR item.
+                item-node_key = item_key.
+                MOVE ls_j_view-netins TO v_text.
+                CONCATENATE ls_j_view-docnum '-' 'Montante líquido do seguro em moeda do documento:' v_text INTO v_text SEPARATED BY space.
+                item-item_name = ls_j_view-docnum.
+                item-class = cl_gui_list_tree=>item_class_text.
+                item-length = 100.
+                item-text = v_text.
+                APPEND item TO lt_item.
+                CLEAR item.
+                CLEAR: item_key, v_text.
+              ENDIF.
+            ENDIF.
+
+          WHEN 'NETOTH'.
+
+            IF ls_j_view-netoth IS NOT INITIAL.
+
+              IF ls_j_view-docnum = lv_docnum.
+                MOVE ls_j_view-netoth TO item_key.
+                CONCATENATE ls_j_view-docnum '-' item_key INTO item_key SEPARATED BY space.
+                MOVE ls_j_view-docnum TO lv_docnum.
+                node-node_key = item_key.
+                node-isfolder = ' '.
+                node-relatkey = ls_j_view-docnum.
+                node-relatship = cl_gui_list_tree=>relat_last_child.
+                APPEND node TO lt_node.
+                CLEAR node.
+
+                CLEAR item.
+                item-node_key = item_key.
+                MOVE ls_j_view-netoth TO v_text.
+                CONCATENATE ls_j_view-docnum '-' 'Despesas líquidas em moeda do documento:' v_text INTO v_text SEPARATED BY space.
+                item-item_name = ls_j_view-docnum.
+                item-class = cl_gui_list_tree=>item_class_text.
+                item-length = 100.
+                item-text = v_text.
+                APPEND item TO lt_item.
+                CLEAR item.
+                CLEAR: item_key, v_text.
+              ENDIF.
+            ENDIF.
+
+          WHEN 'INDUS3'.
+            IF ls_j_view-indus3 IS NOT INITIAL.
+
+              CASE ls_j_view-indus3.
+                WHEN '00'.
+                  CONCATENATE ls_j_view-docnum '-' 'Material' INTO item_key SEPARATED BY space.
+                  CONCATENATE ls_j_view-docnum '-' 'Categoria CFOP:' 'Material' INTO v_text SEPARATED BY space.
+                WHEN '01'.
+                  CONCATENATE ls_j_view-docnum '-' 'Eletricidade' INTO item_key SEPARATED BY space.
+                  CONCATENATE ls_j_view-docnum '-' 'Categoria CFOP:' 'Eletricidade' INTO v_text SEPARATED BY space.
+                WHEN '02'.
+                  CONCATENATE ls_j_view-docnum '-' 'Comunicação' INTO item_key SEPARATED BY space.
+                  CONCATENATE ls_j_view-docnum '-' 'Categoria CFOP:' 'Comunicação' INTO v_text SEPARATED BY space.
+                WHEN '03'.
+                  CONCATENATE ls_j_view-docnum '-' 'Transportes' INTO item_key SEPARATED BY space.
+                  CONCATENATE ls_j_view-docnum '-' 'Categoria CFOP:' 'Transportes' INTO v_text SEPARATED BY space.
+                WHEN '04'.
+                  CONCATENATE ls_j_view-docnum '-' 'Animal' INTO item_key SEPARATED BY space.
+                  CONCATENATE ls_j_view-docnum '-' 'Categoria CFOP:' 'Animal' INTO v_text SEPARATED BY space.
+              ENDCASE.
+
+              IF ls_j_view-docnum = lv_docnum.
+
+                MOVE ls_j_view-docnum TO lv_docnum.
+                node-node_key = item_key.
+                node-isfolder = ' '.
+                node-relatkey = ls_j_view-docnum.
+                node-relatship = cl_gui_list_tree=>relat_last_child.
+                APPEND node TO lt_node.
+                CLEAR node.
+
+                CLEAR item.
+                item-node_key = item_key.
+
+                item-item_name = ls_j_view-docnum.
+                item-class = cl_gui_list_tree=>item_class_text.
+                item-length = 100.
+                item-text = v_text.
+                APPEND item TO lt_item.
+                CLEAR item.
+                CLEAR: item_key, v_text.
+              ENDIF.
+            ENDIF.
+
+          WHEN 'ITMTYP'.
+
+            IF ls_j_view-itmtyp IS NOT INITIAL.
+
+              IF ls_j_view-docnum = lv_docnum.
+                CONCATENATE ls_j_view-docnum '-' ls_j_view-itmtyp INTO item_key SEPARATED BY space.
+                MOVE ls_j_view-docnum TO lv_docnum.
+                node-node_key = item_key.
+                node-isfolder = ' '.
+                node-relatkey = ls_j_view-docnum.
+                node-relatship = cl_gui_list_tree=>relat_last_child.
+                APPEND node TO lt_node.
+                CLEAR node.
+
+                CLEAR item.
+                item-node_key = item_key.
+                CONCATENATE ls_j_view-docnum '-' 'Tipo item nota fiscal:' ls_j_view-itmtyp INTO v_text SEPARATED BY space.
+                item-item_name = ls_j_view-docnum.
+                item-class = cl_gui_list_tree=>item_class_text.
+                item-length = 100.
+                item-text = v_text.
+                APPEND item TO lt_item.
+                CLEAR item.
+                CLEAR: item_key, v_text.
+              ENDIF.
+            ENDIF.
+
+          WHEN 'NETDIS'.
+
+            IF ls_j_view-netdis IS NOT INITIAL.
+
+              IF ls_j_view-docnum = lv_docnum.
+                MOVE ls_j_view-netdis TO item_key.
+                CONCATENATE ls_j_view-docnum '-' item_key INTO item_key SEPARATED BY space.
+                MOVE ls_j_view-docnum TO lv_docnum.
+                node-node_key = item_key.
+                node-isfolder = ' '.
+                node-relatkey = ls_j_view-docnum.
+                node-relatship = cl_gui_list_tree=>relat_last_child.
+                APPEND node TO lt_node.
+                CLEAR node.
+
+                CLEAR item.
+                item-node_key = item_key.
+                MOVE ls_j_view-netdis TO v_text.
+                CONCATENATE ls_j_view-docnum '-' 'Montante líquido da redução em moeda do documento:' v_text INTO v_text SEPARATED BY space.
+                item-item_name = ls_j_view-docnum.
+                item-class = cl_gui_list_tree=>item_class_text.
+                item-length = 100.
+                item-text = v_text.
+                APPEND item TO lt_item.
+                CLEAR item.
+                CLEAR: item_key, v_text.
+              ENDIF.
+            ENDIF.
+
+          WHEN 'SPCSTO'.
+
+            IF ls_j_view-spcsto IS NOT INITIAL.
+
+              IF ls_j_view-docnum = lv_docnum.
+                CASE ls_j_view-spcsto.
+                  WHEN ' '.
+                    CONCATENATE ls_j_view-docnum '-' '--' INTO item_key SEPARATED BY space.
+                    CONCATENATE ls_j_view-docnum '-' 'Nota Fiscal caso especial para determinação CFOP:' 'Determinação CFOP sem substituição tributária' INTO v_text SEPARATED BY space.
+                  WHEN '01'.
+                    CONCATENATE ls_j_view-docnum '-' '01' INTO item_key SEPARATED BY space.
+                    CONCATENATE ls_j_view-docnum '-' 'Nota Fiscal caso especial para determinação CFOP:' 'Determinação CFOP com substituição tributária' INTO v_text SEPARATED BY space.
+                  WHEN '02'.
+                    CONCATENATE ls_j_view-docnum '-' '02' INTO item_key SEPARATED BY space.
+                    CONCATENATE ls_j_view-docnum '-' 'Nota Fiscal caso especial para determinação CFOP:' 'CFOP para serviços sujeitos ao imposto ISS' INTO v_text SEPARATED BY space.
+                ENDCASE.
+
+                MOVE ls_j_view-docnum TO lv_docnum.
+                node-node_key = item_key.
+                node-isfolder = ' '.
+                node-relatkey = ls_j_view-docnum.
+                node-relatship = cl_gui_list_tree=>relat_last_child.
+                APPEND node TO lt_node.
+                CLEAR node.
+
+                CLEAR item.
+                item-node_key = item_key.
+                item-item_name = ls_j_view-docnum.
+                item-class = cl_gui_list_tree=>item_class_text.
+                item-length = 100.
+                item-text = v_text.
+                APPEND item TO lt_item.
+                CLEAR item.
+                CLEAR: item_key, v_text.
+              ENDIF.
+            ENDIF.
+
+          WHEN 'INCLTX'.
+
+            IF ls_j_view-docnum = lv_docnum.
+              CASE ls_j_view-spcsto.
+                WHEN ' '.
+                  CONCATENATE ls_j_view-docnum '-' 'ICSSSIM' INTO item_key SEPARATED BY space.
+                  CONCATENATE ls_j_view-docnum '-' 'Valor e preço incluíndo ICMS/ISS:' 'Sim' INTO v_text SEPARATED BY space.
+                WHEN 'X'.
+                  CONCATENATE ls_j_view-docnum '-' 'ICSSSNAO' INTO item_key SEPARATED BY space.
+                  CONCATENATE ls_j_view-docnum '-' 'Valor e preço incluíndo ICMS/ISS:' 'Não' INTO v_text SEPARATED BY space.
+              ENDCASE.
+
+              MOVE ls_j_view-docnum TO lv_docnum.
+              node-node_key = item_key.
+              node-isfolder = ' '.
+              node-relatkey = ls_j_view-docnum.
+              node-relatship = cl_gui_list_tree=>relat_last_child.
+              APPEND node TO lt_node.
+              CLEAR node.
+
+              CLEAR item.
+              item-node_key = item_key.
+              item-item_name = ls_j_view-docnum.
+              item-class = cl_gui_list_tree=>item_class_text.
+              item-length = 100.
+              item-text = v_text.
+              APPEND item TO lt_item.
+              CLEAR item.
+              CLEAR: item_key, v_text.
+            ENDIF.
+
+          WHEN 'STATIT'.
+
+            IF ls_j_view-docnum = lv_docnum.
+              CASE ls_j_view-statit.
+                WHEN ' '.
+                  CONCATENATE ls_j_view-docnum '-' 'SIM' INTO item_key SEPARATED BY space.
+                  CONCATENATE ls_j_view-docnum '-' 'Código: item estatístico:' 'Sim' INTO v_text SEPARATED BY space.
+                WHEN 'X'.
+                  CONCATENATE ls_j_view-docnum '-' 'NAO' INTO item_key SEPARATED BY space.
+                  CONCATENATE ls_j_view-docnum '-' 'Código: item estatístico:' 'Não' INTO v_text SEPARATED BY space.
+              ENDCASE.
+
+              MOVE ls_j_view-docnum TO lv_docnum.
+              node-node_key = item_key.
+              node-isfolder = ' '.
+              node-relatkey = ls_j_view-docnum.
+              node-relatship = cl_gui_list_tree=>relat_last_child.
+              APPEND node TO lt_node.
+              CLEAR node.
+
+              CLEAR item.
+              item-node_key = item_key.
+              item-item_name = ls_j_view-docnum.
+              item-class = cl_gui_list_tree=>item_class_text.
+              item-length = 100.
+              item-text = v_text.
+              APPEND item TO lt_item.
+              CLEAR item.
+              CLEAR: item_key, v_text.
+            ENDIF.
+
+          WHEN 'WERKS'.
+
+            IF ls_j_view-werks IS NOT INITIAL.
+
+              IF ls_j_view-docnum = lv_docnum.
+                CONCATENATE ls_j_view-docnum '-' 'C' ls_j_view-werks INTO item_key SEPARATED BY space.
+                MOVE ls_j_view-docnum TO lv_docnum.
+                node-node_key = item_key.
+                node-isfolder = ' '.
+                node-relatkey = ls_j_view-docnum.
+                node-relatship = cl_gui_list_tree=>relat_last_child.
+                APPEND node TO lt_node.
+                CLEAR node.
+
+                CLEAR item.
+                item-node_key = item_key.
+                CONCATENATE ls_j_view-docnum '-' 'Centro:' ls_j_view-werks INTO v_text SEPARATED BY space.
+                item-item_name = ls_j_view-docnum.
+                item-class = cl_gui_list_tree=>item_class_text.
+                item-length = 100.
+                item-text = v_text.
+                APPEND item TO lt_item.
+                CLEAR item.
+                CLEAR: item_key, v_text.
+              ENDIF.
+            ENDIF.
+
+          WHEN 'DIRECT'.
+
+            IF ls_j_view-direct IS NOT INITIAL.
+              CASE ls_j_view-direct.
+                WHEN '1'.
+                  CONCATENATE ls_j_view-docnum '-' 'Entrada' INTO item_key SEPARATED BY space.
+                  CONCATENATE ls_j_view-docnum '-' 'Direção do movimento de mercadorias:' 'Entrada' INTO v_text SEPARATED BY space.
+                WHEN '2'.
+                  CONCATENATE ls_j_view-docnum '-' 'Saída' INTO item_key SEPARATED BY space.
+                  CONCATENATE ls_j_view-docnum '-' 'Direção do movimento de mercadorias:' 'Saída' INTO v_text SEPARATED BY space.
+                WHEN '3'.
+                  CONCATENATE ls_j_view-docnum '-' 'Devoluções de saída de transferências de estoque' INTO item_key SEPARATED BY space.
+                  CONCATENATE ls_j_view-docnum '-' 'Direção do movimento de mercadorias:' 'Devoluções de saída de transferências de estoque' INTO v_text SEPARATED BY space.
+                WHEN '4'.
+                  CONCATENATE ls_j_view-docnum '-' 'Devoluções de entrada de transferências de estoque' INTO item_key SEPARATED BY space.
+                  CONCATENATE ls_j_view-docnum '-' 'Direção do movimento de mercadorias:' 'Devoluções de entrada de transferências de estoque' INTO v_text SEPARATED BY space.
+              ENDCASE.
+
+              IF ls_j_view-docnum = lv_docnum.
+
+                MOVE ls_j_view-docnum TO lv_docnum.
+                node-node_key = item_key.
+                node-isfolder = ' '.
+                node-relatkey = ls_j_view-docnum.
+                node-relatship = cl_gui_list_tree=>relat_last_child.
+                APPEND node TO lt_node.
+                CLEAR node.
+
+                CLEAR item.
+                item-node_key = item_key.
+
+                item-item_name = ls_j_view-docnum.
+                item-class = cl_gui_list_tree=>item_class_text.
+                item-length = 100.
+                item-text = v_text.
+                APPEND item TO lt_item.
+                CLEAR item.
+                CLEAR: item_key, v_text.
+              ENDIF.
+            ENDIF.
+
+          WHEN 'DSTCAT'.
+
+            IF ls_j_view-dstcat IS NOT INITIAL.
+              CASE ls_j_view-dstcat.
+                WHEN '0'.
+                  CONCATENATE ls_j_view-docnum '-' 'Mesmo estado' INTO item_key SEPARATED BY space.
+                  CONCATENATE ls_j_view-docnum '-' 'Categoria de destino:' 'Mesmo estado' INTO v_text SEPARATED BY space.
+                WHEN '1'.
+                  CONCATENATE ls_j_view-docnum '-' 'Estado diferente' INTO item_key SEPARATED BY space.
+                  CONCATENATE ls_j_view-docnum '-' 'Categoria de destino:' 'Estado diferente' INTO v_text SEPARATED BY space.
+                WHEN '2'.
+                  CONCATENATE ls_j_view-docnum '-' 'País diferente' INTO item_key SEPARATED BY space.
+                  CONCATENATE ls_j_view-docnum '-' 'Categoria de destino:' 'País diferente' INTO v_text SEPARATED BY space.
+                WHEN '3'.
+                  CONCATENATE ls_j_view-docnum '-' 'Mesmo estado - zona de livre comércio' INTO item_key SEPARATED BY space.
+                  CONCATENATE ls_j_view-docnum '-' 'Categoria de destino:' 'Mesmo estado - zona de livre comércio' INTO v_text SEPARATED BY space.
+                WHEN '4'.
+                  CONCATENATE ls_j_view-docnum '-' 'Outro estado - zona de livre comércio' INTO item_key SEPARATED BY space.
+                  CONCATENATE ls_j_view-docnum '-' 'Categoria de destino:' 'Outro estado - zona de livre comércio' INTO v_text SEPARATED BY space.
+              ENDCASE.
+
+              IF ls_j_view-docnum = lv_docnum.
+
+                MOVE ls_j_view-docnum TO lv_docnum.
+                node-node_key = item_key.
+                node-isfolder = ' '.
+                node-relatkey = ls_j_view-docnum.
+                node-relatship = cl_gui_list_tree=>relat_last_child.
+                APPEND node TO lt_node.
+                CLEAR node.
+
+                CLEAR item.
+                item-node_key = item_key.
+
+                item-item_name = ls_j_view-docnum.
+                item-class = cl_gui_list_tree=>item_class_text.
+                item-length = 100.
+                item-text = v_text.
+                APPEND item TO lt_item.
+                CLEAR item.
+                CLEAR: item_key, v_text.
+              ENDIF.
+            ENDIF.
+
+          WHEN 'INDUS2'.
+
+            IF ls_j_view-dstcat IS NOT INITIAL.
+              CASE ls_j_view-dstcat.
+                WHEN '00'.
+                  CONCATENATE ls_j_view-docnum '-' 'Mesmo estado' INTO item_key SEPARATED BY space.
+                  CONCATENATE ls_j_view-docnum '-' 'Local de negócio: categoria CFOP:' 'Indústria (cooperat.)' INTO v_text SEPARATED BY space.
+                WHEN '01'.
+                  CONCATENATE ls_j_view-docnum '-' 'Estado diferente' INTO item_key SEPARATED BY space.
+                  CONCATENATE ls_j_view-docnum '-' 'Local de negócio: categoria CFOP:' 'Eletricidade' INTO v_text SEPARATED BY space.
+                WHEN '02'.
+                  CONCATENATE ls_j_view-docnum '-' 'País diferente' INTO item_key SEPARATED BY space.
+                  CONCATENATE ls_j_view-docnum '-' 'Local de negócio: categoria CFOP:' 'Comunicação' INTO v_text SEPARATED BY space.
+                WHEN '03'.
+                  CONCATENATE ls_j_view-docnum '-' 'Mesmo estado - zona de livre comércio' INTO item_key SEPARATED BY space.
+                  CONCATENATE ls_j_view-docnum '-' 'Local de negócio: categoria CFOP:' 'Transportes' INTO v_text SEPARATED BY space.
+                WHEN '04'.
+                  CONCATENATE ls_j_view-docnum '-' 'Outro estado - zona de livre comércio' INTO item_key SEPARATED BY space.
+                  CONCATENATE ls_j_view-docnum '-' 'Local de negócio: categoria CFOP:' 'Prestações de serviços' INTO v_text SEPARATED BY space.
+                WHEN '05'.
+                  CONCATENATE ls_j_view-docnum '-' 'Outro estado - zona de livre comércio' INTO item_key SEPARATED BY space.
+                  CONCATENATE ls_j_view-docnum '-' 'Local de negócio: categoria CFOP:' 'Indústria bens consumo (coop.)' INTO v_text SEPARATED BY space.
+                WHEN '06'.
+                  CONCATENATE ls_j_view-docnum '-' 'Outro estado - zona de livre comércio' INTO item_key SEPARATED BY space.
+                  CONCATENATE ls_j_view-docnum '-' 'Local de negócio: categoria CFOP:' 'Rural' INTO v_text SEPARATED BY space.
+              ENDCASE.
+
+              IF ls_j_view-docnum = lv_docnum.
+
+                MOVE ls_j_view-docnum TO lv_docnum.
+                node-node_key = item_key.
+                node-isfolder = ' '.
+                node-relatkey = ls_j_view-docnum.
+                node-relatship = cl_gui_list_tree=>relat_last_child.
+                APPEND node TO lt_node.
+                CLEAR node.
+
+                CLEAR item.
+                item-node_key = item_key.
+
+                item-item_name = ls_j_view-docnum.
+                item-class = cl_gui_list_tree=>item_class_text.
+                item-length = 100.
+                item-text = v_text.
+                APPEND item TO lt_item.
+                CLEAR item.
+                CLEAR: item_key, v_text.
+              ENDIF.
+            ENDIF.
+
+          WHEN 'NFPRI'.
+
+            IF ls_j_view-nfpri IS NOT INITIAL.
+
+              IF ls_j_view-docnum = lv_docnum.
+                MOVE ls_j_view-nfpri TO item_key.
+                CONCATENATE 'PRI' item_key INTO item_key.
+                MOVE ls_j_view-docnum TO lv_docnum.
+                node-node_key = item_key.
+                node-isfolder = ' '.
+                node-relatkey = ls_j_view-docnum.
+                node-relatship = cl_gui_list_tree=>relat_last_child.
+                APPEND node TO lt_node.
+                CLEAR node.
+
+                CLEAR item.
+                item-node_key = item_key.
+                MOVE ls_j_view-nfpri TO v_text.
+                CONCATENATE ls_j_view-docnum '-' 'Preço líquido incluindo impostos:' v_text INTO v_text SEPARATED BY space.
+                item-item_name = ls_j_view-docnum.
+                item-class = cl_gui_list_tree=>item_class_text.
+                item-length = 100.
+                item-text = v_text.
+                APPEND item TO lt_item.
+                CLEAR item.
+                CLEAR: item_key, v_text.
+              ENDIF.
+            ENDIF.
+
+          WHEN 'NFNET'.
+
+            IF ls_j_view-nfnet IS NOT INITIAL.
+
+              IF ls_j_view-docnum = lv_docnum.
+                MOVE ls_j_view-nfnet TO item_key.
+                CONCATENATE 'NET' item_key INTO item_key.
+                MOVE ls_j_view-docnum TO lv_docnum.
+                node-node_key = item_key.
+                node-isfolder = ' '.
+                node-relatkey = ls_j_view-docnum.
+                node-relatship = cl_gui_list_tree=>relat_last_child.
+                APPEND node TO lt_node.
+                CLEAR node.
+
+                CLEAR item.
+                item-node_key = item_key.
+                MOVE ls_j_view-nfnet TO v_text.
+                CONCATENATE ls_j_view-docnum '-' 'Valor líquido incluindo impostos:' v_text INTO v_text SEPARATED BY space.
+                item-item_name = ls_j_view-docnum.
+                item-class = cl_gui_list_tree=>item_class_text.
+                item-length = 100.
+                item-text = v_text.
+                APPEND item TO lt_item.
+                CLEAR item.
+                CLEAR: item_key, v_text.
+              ENDIF.
+            ENDIF.
+
+          WHEN 'NFDIS'.
+
+            IF ls_j_view-nfdis IS NOT INITIAL.
+
+              IF ls_j_view-docnum = lv_docnum.
+                MOVE ls_j_view-nfdis TO item_key.
+                CONCATENATE 'DIS' item_key INTO item_key.
+                MOVE ls_j_view-docnum TO lv_docnum.
+                node-node_key = item_key.
+                node-isfolder = ' '.
+                node-relatkey = ls_j_view-docnum.
+                node-relatship = cl_gui_list_tree=>relat_last_child.
+                APPEND node TO lt_node.
+                CLEAR node.
+
+                CLEAR item.
+                item-node_key = item_key.
+                MOVE ls_j_view-nfdis TO v_text.
+                CONCATENATE ls_j_view-docnum '-' 'Montante da redução incl.impostos:' v_text INTO v_text SEPARATED BY space.
+                item-item_name = ls_j_view-docnum.
+                item-class = cl_gui_list_tree=>item_class_text.
+                item-length = 100.
+                item-text = v_text.
+                APPEND item TO lt_item.
+                CLEAR item.
+                CLEAR: item_key, v_text.
+              ENDIF.
+            ENDIF.
+
+          WHEN 'NFFRE'.
+
+
+            IF ls_j_view-nffre IS NOT INITIAL.
+
+              IF ls_j_view-docnum = lv_docnum.
+                MOVE ls_j_view-nffre TO item_key.
+                CONCATENATE 'FRE' item_key INTO item_key.
+                MOVE ls_j_view-docnum TO lv_docnum.
+                node-node_key = item_key.
+                node-isfolder = ' '.
+                node-relatkey = ls_j_view-docnum.
+                node-relatship = cl_gui_list_tree=>relat_last_child.
+                APPEND node TO lt_node.
+                CLEAR node.
+
+                CLEAR item.
+                item-node_key = item_key.
+                MOVE ls_j_view-nffre TO v_text.
+                CONCATENATE ls_j_view-docnum '-' 'Despesas incluindo impostos:' v_text INTO v_text SEPARATED BY space.
+                item-item_name = ls_j_view-docnum.
+                item-class = cl_gui_list_tree=>item_class_text.
+                item-length = 100.
+                item-text = v_text.
+                APPEND item TO lt_item.
+                CLEAR item.
+                CLEAR: item_key, v_text.
+              ENDIF.
+            ENDIF.
+
+          WHEN 'NFOTH'.
+
+            IF ls_j_view-nfoth IS NOT INITIAL.
+
+              IF ls_j_view-docnum = lv_docnum.
+                MOVE ls_j_view-nfoth TO item_key.
+                CONCATENATE 'OTH' item_key INTO item_key.
+                MOVE ls_j_view-docnum TO lv_docnum.
+                node-node_key = item_key.
+                node-isfolder = ' '.
+                node-relatkey = ls_j_view-docnum.
+                node-relatship = cl_gui_list_tree=>relat_last_child.
+                APPEND node TO lt_node.
+                CLEAR node.
+
+                CLEAR item.
+                item-node_key = item_key.
+                MOVE ls_j_view-nfoth TO v_text.
+                CONCATENATE ls_j_view-docnum '-' 'Montante do seguro incluíndo imposto:' v_text INTO v_text SEPARATED BY space.
+                item-item_name = ls_j_view-docnum.
+                item-class = cl_gui_list_tree=>item_class_text.
+                item-length = 100.
+                item-text = v_text.
+                APPEND item TO lt_item.
+                CLEAR item.
+                CLEAR: item_key, v_text.
+              ENDIF.
+            ENDIF.
+
+          WHEN 'NETWRT'.
+
+            IF ls_j_view-netwrt IS NOT INITIAL.
+
+              IF ls_j_view-docnum = lv_docnum.
+                MOVE ls_j_view-netwrt TO item_key.
+                CONCATENATE 'WRT' item_key INTO item_key.
+                MOVE ls_j_view-docnum TO lv_docnum.
+                node-node_key = item_key.
+                node-isfolder = ' '.
+                node-relatkey = ls_j_view-docnum.
+                node-relatship = cl_gui_list_tree=>relat_last_child.
+                APPEND node TO lt_node.
+                CLEAR node.
+
+                CLEAR item.
+                item-node_key = item_key.
+                MOVE ls_j_view-netwrt TO v_text.
+                CONCATENATE ls_j_view-docnum '-' 'Valor líquido/Frete/Seguro/Despesas/Desconto:' v_text INTO v_text SEPARATED BY space.
+                item-item_name = ls_j_view-docnum.
+                item-class = cl_gui_list_tree=>item_class_text.
+                item-length = 100.
+                item-text = v_text.
+                APPEND item TO lt_item.
+                CLEAR item.
+                CLEAR: item_key, v_text.
+              ENDIF.
+
+            ENDIF.
+
+          WHEN 'NFNETT'.
+
+            IF ls_j_view-nfnett IS NOT INITIAL.
+
+              IF ls_j_view-docnum = lv_docnum.
+                MOVE ls_j_view-nfnett TO item_key.
+                CONCATENATE 'ETT' item_key INTO item_key.
+                MOVE ls_j_view-docnum TO lv_docnum.
+                node-node_key = item_key.
+                node-isfolder = ' '.
+                node-relatkey = ls_j_view-docnum.
+                node-relatship = cl_gui_list_tree=>relat_last_child.
+                APPEND node TO lt_node.
+                CLEAR node.
+
+                CLEAR item.
+                item-node_key = item_key.
+                MOVE ls_j_view-nfnett TO v_text.
+                CONCATENATE ls_j_view-docnum '-' 'Valor líquido/Frete/Seguro/Despesas/Desconto:' v_text INTO v_text SEPARATED BY space.
+                item-item_name = ls_j_view-docnum.
+                item-class = cl_gui_list_tree=>item_class_text.
+                item-length = 100.
+                item-text = v_text.
+                APPEND item TO lt_item.
+                CLEAR item.
+                CLEAR: item_key, v_text.
+              ENDIF.
+            ENDIF.
+
+          WHEN 'MWSKZ'.
+
+            IF ls_j_view-mwskz IS NOT INITIAL.
+
+              IF ls_j_view-docnum = lv_docnum.
+                CONCATENATE ls_j_view-docnum '-' ls_j_view-mwskz INTO item_key SEPARATED BY space.
+                MOVE ls_j_view-docnum TO lv_docnum.
+                node-node_key = item_key.
+                node-isfolder = ' '.
+                node-relatkey = ls_j_view-docnum.
+                node-relatship = cl_gui_list_tree=>relat_last_child.
+                APPEND node TO lt_node.
+                CLEAR node.
+
+                CLEAR item.
+                item-node_key = item_key.
+                CONCATENATE ls_j_view-docnum '-' 'Código do IVA:' ls_j_view-mwskz INTO v_text SEPARATED BY space.
+                item-item_name = ls_j_view-docnum.
+                item-class = cl_gui_list_tree=>item_class_text.
+                item-length = 100.
+                item-text = v_text.
+                APPEND item TO lt_item.
+                CLEAR item.
+                CLEAR: item_key, v_text.
+              ENDIF.
+            ENDIF.
+
+
+          WHEN 'KALSM'.
+
+            IF ls_j_view-kalsm IS NOT INITIAL.
+
+              IF ls_j_view-docnum = lv_docnum.
+                CONCATENATE ls_j_view-docnum '-' ls_j_view-kalsm INTO item_key SEPARATED BY space.
+                MOVE ls_j_view-docnum TO lv_docnum.
+                node-node_key = item_key.
+                node-isfolder = ' '.
+                node-relatkey = ls_j_view-docnum.
+                node-relatship = cl_gui_list_tree=>relat_last_child.
+                APPEND node TO lt_node.
+                CLEAR node.
+
+                CLEAR item.
+                item-node_key = item_key.
+                CONCATENATE ls_j_view-docnum '-' 'Esquema:' ls_j_view-kalsm INTO v_text SEPARATED BY space.
+                item-item_name = ls_j_view-docnum.
+                item-class = cl_gui_list_tree=>item_class_text.
+                item-length = 100.
+                item-text = v_text.
+                APPEND item TO lt_item.
+                CLEAR item.
+                CLEAR: item_key, v_text.
+              ENDIF.
+            ENDIF.
+
+          WHEN 'ICMSAVR'.
+
+            IF ls_j_view-icmsavr IS NOT INITIAL.
+
+              IF ls_j_view-docnum = lv_docnum.
+                MOVE ls_j_view-icmsavr TO item_key.
+                CONCATENATE ls_j_view-docnum '-' item_key INTO item_key SEPARATED BY space.
+                MOVE ls_j_view-docnum TO lv_docnum..
+                node-node_key = item_key.
+                node-isfolder = ' '.
+                node-relatkey = ls_j_view-docnum.
+                node-relatship = cl_gui_list_tree=>relat_last_child.
+                APPEND node TO lt_node.
+                CLEAR node.
+
+                CLEAR item.
+                item-node_key = item_key.
+                MOVE ls_j_view-icmsavr TO v_text.
+                CONCATENATE ls_j_view-docnum '-' 'ICMS médio de transferências de estoque:' v_text INTO v_text SEPARATED BY space.
+                item-item_name = ls_j_view-docnum.
+                item-class = cl_gui_list_tree=>item_class_text.
+                item-length = 100.
+                item-text = v_text.
+                APPEND item TO lt_item.
+                CLEAR item.
+                CLEAR: item_key, v_text.
+              ENDIF.
+            ENDIF.
+
+          WHEN 'SUBTAVR'.
+
+            IF ls_j_view-subtavr IS NOT INITIAL.
+
+              IF ls_j_view-docnum = lv_docnum.
+                MOVE ls_j_view-subtavr TO item_key.
+                CONCATENATE ls_j_view-docnum '-' item_key INTO item_key SEPARATED BY space.
+                MOVE ls_j_view-docnum TO lv_docnum.
+                node-node_key = item_key.
+                node-isfolder = ' '.
+                node-relatkey = ls_j_view-docnum.
+                node-relatship = cl_gui_list_tree=>relat_last_child.
+                APPEND node TO lt_node.
+                CLEAR node.
+
+                CLEAR item.
+                item-node_key = item_key.
+                MOVE ls_j_view-subtavr TO v_text.
+                CONCATENATE ls_j_view-docnum '-' 'Subtrib.média de transferências de estoque:' v_text INTO v_text SEPARATED BY space.
+                item-item_name = ls_j_view-docnum.
+                item-class = cl_gui_list_tree=>item_class_text.
+                item-length = 100.
+                item-text = v_text.
+                APPEND item TO lt_item.
+                CLEAR item.
+                CLEAR: item_key, v_text.
+              ENDIF.
+            ENDIF.
+
+          WHEN 'LPPBRT'.
+
+            IF ls_j_view-lppbrt IS NOT INITIAL.
+
+              IF ls_j_view-docnum = lv_docnum.
+                MOVE ls_j_view-lppbrt TO item_key.
+                CONCATENATE ls_j_view-docnum '-' item_key INTO item_key SEPARATED BY space.
+                MOVE ls_j_view-docnum TO lv_docnum.
+                node-node_key = item_key.
+                node-isfolder = ' '.
+                node-relatkey = ls_j_view-docnum.
+                node-relatship = cl_gui_list_tree=>relat_last_child.
+                APPEND node TO lt_node.
+                CLEAR node.
+
+                CLEAR item.
+                item-node_key = item_key.
+                MOVE ls_j_view-lppbrt TO v_text.
+                CONCATENATE ls_j_view-docnum '-' 'Valor bruto do último preço de compra:' v_text INTO v_text SEPARATED BY space.
+                item-item_name = ls_j_view-docnum.
+                item-class = cl_gui_list_tree=>item_class_text.
+                item-length = 100.
+                item-text = v_text.
+                APPEND item TO lt_item.
+                CLEAR item.
+                CLEAR: item_key, v_text.
+              ENDIF.
+            ENDIF.
+
+          WHEN 'ICMSVALP'.
+
+            IF ls_j_view-icmsvalp IS NOT INITIAL.
+
+              IF ls_j_view-docnum = lv_docnum.
+                MOVE ls_j_view-icmsvalp TO item_key.
+                CONCATENATE ls_j_view-docnum '-' item_key INTO item_key SEPARATED BY space.
+                MOVE ls_j_view-docnum TO lv_docnum.
+                node-node_key = item_key.
+                node-isfolder = ' '.
+                node-relatkey = ls_j_view-docnum.
+                node-relatship = cl_gui_list_tree=>relat_last_child.
+                APPEND node TO lt_node.
+                CLEAR node.
+
+                CLEAR item.
+                item-node_key = item_key.
+                MOVE ls_j_view-icmsvalp TO v_text.
+                CONCATENATE ls_j_view-docnum '-' 'Valor ICMS do último preço de compra:' v_text INTO v_text SEPARATED BY space.
+                item-item_name = ls_j_view-docnum.
+                item-class = cl_gui_list_tree=>item_class_text.
+                item-length = 100.
+                item-text = v_text.
+                APPEND item TO lt_item.
+                CLEAR item.
+                CLEAR: item_key, v_text.
+              ENDIF.
+            ENDIF.
+
+          WHEN 'SUBTVALP'.
+
+            IF ls_j_view-subtvalp IS NOT INITIAL.
+
+              IF ls_j_view-docnum = lv_docnum.
+                MOVE ls_j_view-subtvalp TO item_key.
+                CONCATENATE ls_j_view-docnum '-' item_key INTO item_key SEPARATED BY space.
+                MOVE ls_j_view-docnum TO lv_docnum.
+                node-node_key = item_key.
+                node-isfolder = ' '.
+                node-relatkey = ls_j_view-docnum.
+                node-relatship = cl_gui_list_tree=>relat_last_child.
+                APPEND node TO lt_node.
+                CLEAR node.
+
+                CLEAR item.
+                item-node_key = item_key.
+                MOVE ls_j_view-subtvalp TO v_text.
+                CONCATENATE ls_j_view-docnum '-' 'Valor subtrib. do último preço de compra:' v_text INTO v_text SEPARATED BY space.
+                item-item_name = ls_j_view-docnum.
+                item-class = cl_gui_list_tree=>item_class_text.
+                item-length = 100.
+                item-text = v_text.
+                APPEND item TO lt_item.
+                CLEAR item.
+                CLEAR: item_key, v_text.
+              ENDIF.
+            ENDIF.
+
+          WHEN 'TAXLW3'.
+
+            IF ls_j_view-taxlw3 IS NOT INITIAL.
+
+              IF ls_j_view-docnum = lv_docnum.
+                MOVE ls_j_view-taxlw3 TO item_key.
+                CONCATENATE ls_j_view-docnum '-' item_key INTO item_key SEPARATED BY space.
+                MOVE ls_j_view-docnum TO lv_docnum.
+                node-node_key = item_key.
+                node-isfolder = ' '.
+                node-relatkey = ls_j_view-docnum.
+                node-relatship = cl_gui_list_tree=>relat_last_child.
+                APPEND node TO lt_node.
+                CLEAR node.
+
+                CLEAR item.
+                item-node_key = item_key.
+                MOVE ls_j_view-taxlw3 TO v_text.
+                CONCATENATE ls_j_view-docnum '-' 'Lei do imposto ISS:' v_text INTO v_text SEPARATED BY space.
+                item-item_name = ls_j_view-docnum.
+                item-class = cl_gui_list_tree=>item_class_text.
+                item-length = 100.
+                item-text = v_text.
+                APPEND item TO lt_item.
+                CLEAR item.
+                CLEAR: item_key, v_text.
+              ENDIF.
+            ENDIF.
+
+          WHEN 'SRVNR'.
+
+            IF ls_j_view-srvnr IS NOT INITIAL.
+
+              IF ls_j_view-docnum = lv_docnum.
+                MOVE ls_j_view-srvnr TO item_key.
+                CONCATENATE ls_j_view-docnum '-' item_key INTO item_key SEPARATED BY space.
+                MOVE ls_j_view-docnum TO lv_docnum.
+                node-node_key = item_key.
+                node-isfolder = ' '.
+                node-relatkey = ls_j_view-docnum.
+                node-relatship = cl_gui_list_tree=>relat_last_child.
+                APPEND node TO lt_node.
+                CLEAR node.
+
+                CLEAR item.
+                item-node_key = item_key.
+                MOVE ls_j_view-srvnr TO v_text.
+                CONCATENATE ls_j_view-docnum '-' 'Nº de serviço' v_text INTO v_text SEPARATED BY space.
+                item-item_name = ls_j_view-docnum.
+                item-class = cl_gui_list_tree=>item_class_text.
+                item-length = 100.
+                item-text = v_text.
+                APPEND item TO lt_item.
+                CLEAR item.
+                CLEAR: item_key, v_text.
+              ENDIF.
+            ENDIF.
+
+          WHEN 'TAXSI3'.
+
+            IF ls_j_view-taxsi3 IS NOT INITIAL.
+
+              IF ls_j_view-docnum = lv_docnum.
+                MOVE ls_j_view-taxsi3 TO item_key.
+                CONCATENATE ls_j_view-docnum '-' item_key INTO item_key SEPARATED BY space.
+                MOVE ls_j_view-docnum TO lv_docnum.
+                node-node_key = item_key.
+                node-isfolder = ' '.
+                node-relatkey = ls_j_view-docnum.
+                node-relatship = cl_gui_list_tree=>relat_last_child.
+                APPEND node TO lt_node.
+                CLEAR node.
+
+                CLEAR item.
+                item-node_key = item_key.
+                MOVE ls_j_view-taxsi3 TO v_text.
+                CONCATENATE ls_j_view-docnum '-' 'Situação de imposto ISS:' v_text INTO v_text SEPARATED BY space.
+                item-item_name = ls_j_view-docnum.
+                item-class = cl_gui_list_tree=>item_class_text.
+                item-length = 100.
+                item-text = v_text.
+                APPEND item TO lt_item.
+                CLEAR item.
+                CLEAR: item_key, v_text.
+              ENDIF.
+            ENDIF.
+
+        ENDCASE.
+
+      ENDLOOP.
+
+    ENDLOOP.
+
+    SORT lt_node ASCENDING.
+    SORT lt_item ASCENDING.
+
+    DELETE ADJACENT DUPLICATES FROM lt_node COMPARING ALL FIELDS.
+    DELETE ADJACENT DUPLICATES FROM lt_item COMPARING ALL FIELDS.
+
+    SORT lt_node BY node_key ASCENDING.
+    SORT lt_item BY node_key ASCENDING.
+
+    lt_send = lt_view.
